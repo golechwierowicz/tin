@@ -2,18 +2,16 @@
 #define TIN_SERIALIZER_H
 
 #include <cstdint>
-#include <cstring>
+#include <string>
 #include <assert.h>
-
-namespace {
-    static const int BUFFER_SIZE = 512;
-}
 
 class Serializer {
 private:
+    static const int BUFFER_SIZE = 512;
+
     uint8_t buffer[BUFFER_SIZE];
-    int16_t buffer_position = 0;
-    int16_t last_block = 0;
+    uint16_t buffer_position = 0;
+    uint16_t last_block = 0;
     bool in_block = false;
 
     Serializer& write(void* value, size_t size);
@@ -30,6 +28,9 @@ public:
     Serializer& write(uint16_t value);
     Serializer& write(uint32_t value);
     Serializer& write(uint64_t value);
+    Serializer& write(std::string s) {
+        return *this;
+    }
 
     uint8_t* get_buffer(uint16_t& size) {
         size = last_block;

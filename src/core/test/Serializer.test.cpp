@@ -50,12 +50,24 @@ BOOST_AUTO_TEST_CASE(buffer_contents_should_be_correct) {
 
 BOOST_AUTO_TEST_CASE(buffer_overflow_should_throw_exception) {
     Serializer serializer;
+
+    BOOST_CHECK_THROW(
+            {
+                serializer.begin_block(1);
+                while (true) {
+                    serializer.write((uint8_t) 0);
+                }
+            },
+            std::exception
+    );
+}
+
+BOOST_AUTO_TEST_CASE(buffer_size_should_omit_incomplete_blocks) {
+    Serializer serializer;
     uint16_t size;
 
     serializer.begin_block(1);
-    for(int i = 0; i < BUFFER_SIZE - 8; i++) {
-        serializer.write((uint8_t) 0);
-    }
+    serializer.get_buffer(size);
 
-    BOOST_CHECK_THROW(serializer.write((uint8_t) 0), std::exception);
+    BOOST_CHECK_EQUAL(size, 0);
 }

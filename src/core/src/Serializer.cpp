@@ -1,4 +1,5 @@
-#include <iostream>
+#include <cstring>
+#include <stdexcept>
 #include "Serializer.h"
 
 Serializer& Serializer::begin_block(int32_t type) {
