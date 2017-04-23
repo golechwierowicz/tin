@@ -47,3 +47,15 @@ BOOST_AUTO_TEST_CASE(buffer_contents_should_be_correct) {
     BOOST_CHECK_EQUAL(size, sizeof(expected));
     BOOST_CHECK(memcmp(buffer, expected, sizeof(expected)) == 0);
 }
+
+BOOST_AUTO_TEST_CASE(buffer_overflow_should_throw_exception) {
+    Serializer serializer;
+    uint16_t size;
+
+    serializer.begin_block(1);
+    for(int i = 0; i < BUFFER_SIZE - 8; i++) {
+        serializer.write((uint8_t) 0);
+    }
+
+    BOOST_CHECK_THROW(serializer.write((uint8_t) 0), std::exception);
+}
