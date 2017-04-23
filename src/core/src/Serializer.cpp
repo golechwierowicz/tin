@@ -4,24 +4,28 @@
 Serializer& Serializer::begin_block(int32_t type) {
     assert(!in_block);
     in_block = true;
-    last_block = buffer_position;
     write(type);
     write((int32_t) 0);
     return *this;
 }
 
-Serializer& Serializer::write(void* value, size_t size)  {
+Serializer& Serializer::write(void* value, size_t size) {
     assert(in_block);
-    memcpy(buffer + buffer_position, value, size);
-    buffer_position += size;
-    return *this;
+    if (buffer_position + size > BUFFER_SIZE) {
+        throw std::runtime_error("No space left in buffer.");
+    } else {
+        memcpy(buffer + buffer_position, value, size);
+        buffer_position += size;
+        return *this;
+    }
 }
 
 Serializer& Serializer::end_block() {
     assert(in_block);
-    in_block = false;
-    int32_t size = buffer_position - last_block;
+    uint32_t size = htobe32((uint32_t) (buffer_position - last_block));
     memcpy(buffer + last_block + sizeof(int32_t), &size, sizeof(int32_t));
+    last_block = buffer_position;
+    in_block = false;
     return *this;
 }
 

@@ -6,12 +6,12 @@
 #include <assert.h>
 
 namespace {
-    static const int BUFF_SIZE = 512;
+    static const int BUFFER_SIZE = 512;
 }
 
 class Serializer {
 private:
-    uint8_t buffer[BUFF_SIZE];
+    uint8_t buffer[BUFFER_SIZE];
     int16_t buffer_position = 0;
     int16_t last_block = 0;
     bool in_block = false;
@@ -32,7 +32,7 @@ public:
     Serializer& write(uint64_t value);
 
     uint8_t* get_buffer(uint16_t& size) {
-        size = buffer_position;
+        size = last_block;
         return buffer;
     }
 };
