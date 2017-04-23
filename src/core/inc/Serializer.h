@@ -26,6 +26,10 @@ public:
     Serializer& write(int16_t value);
     Serializer& write(int32_t value);
     Serializer& write(int64_t value);
+    Serializer& write(uint8_t value);
+    Serializer& write(uint16_t value);
+    Serializer& write(uint32_t value);
+    Serializer& write(uint64_t value);
 
     uint8_t* get_buffer(uint16_t& size) {
         size = buffer_position;
