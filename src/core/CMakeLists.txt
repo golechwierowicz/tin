@@ -9,7 +9,8 @@ if (NOT TARGET core) # run once
     include_directories(${SHARED_LIB_INCLUDE_DIR})
     set(SOURCE_FILES
             src/Serializer.cpp inc/Serializer.h
-            src/Deserializer.cpp inc/Deserializer.h)
+            src/Deserializer.cpp inc/Deserializer.h
+            inc/Serializable.h)
     add_library(core STATIC ${SOURCE_FILES})
 
     # testing

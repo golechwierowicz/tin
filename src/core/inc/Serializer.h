@@ -2,7 +2,6 @@
 #define TIN_SERIALIZER_H
 
 #include <cstdint>
-#include <string>
 #include <assert.h>
 
 class Serializer {
@@ -17,7 +16,7 @@ private:
     Serializer& write(const void* value, size_t size);
 
 public:
-    Serializer& begin_block(int32_t type);
+    Serializer& begin_block(uint32_t type);
     Serializer& end_block();
 
     Serializer& write(int8_t value);

@@ -1,8 +1,9 @@
 #include <cstring>
+#include <string>
 #include <stdexcept>
 #include "Serializer.h"
 
-Serializer& Serializer::begin_block(int32_t type) {
+Serializer& Serializer::begin_block(uint32_t type) {
     assert(!in_block);
     in_block = true;
     write(type);
