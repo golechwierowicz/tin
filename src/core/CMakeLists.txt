@@ -8,7 +8,8 @@ set(SHARED_LIB_INCLUDE_DIR ${SHARED_LIB_INCLUDE_DIR} PARENT_SCOPE)
 if (NOT TARGET core) # run once
     include_directories(${SHARED_LIB_INCLUDE_DIR})
     set(SOURCE_FILES
-            src/Serializer.cpp inc/Serializer.h)
+            src/Serializer.cpp inc/Serializer.h
+            src/Deserializer.cpp inc/Deserializer.h)
     add_library(core STATIC ${SOURCE_FILES})
 
     # testing
@@ -16,7 +17,8 @@ if (NOT TARGET core) # run once
     find_package(Boost COMPONENTS unit_test_framework REQUIRED)
     include_directories(${Boost_INCLUDE_DIRS})
     set(TEST_FILES ${SOURCE_FILES}
-            test/Serializer.test.cpp)
+            test/Serializer.test.cpp
+            test/Deserializer.test.cpp)
     add_executable(core_test ${TEST_FILES})
     target_link_libraries(core_test ${Boost_LIBRARIES})
 endif ()
