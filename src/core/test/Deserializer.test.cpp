@@ -69,3 +69,54 @@ BOOST_AUTO_TEST_CASE(multiple_blocks_handled_correctly) {
     BOOST_CHECK_EQUAL(value_4, 4);
     BOOST_CHECK_EQUAL(value_5, 5);
 }
+
+BOOST_AUTO_TEST_CASE(insufficient_block_size_should_cause_exception) {
+    uint8_t buffer[] = {
+            0, 0, 0, 1, // block type
+            0, 0, 0, 8, // block size
+            0, 0, 0, 1,
+    };
+    Deserializer deserializer(buffer, sizeof(buffer));
+
+    int32_t value;
+
+    BOOST_CHECK_THROW(
+            deserializer.read(value),
+            std::exception
+    );
+}
+
+BOOST_AUTO_TEST_CASE(exceeding_block_size_should_cause_exception) {
+    uint8_t buffer[] = {
+            0, 0, 0, 1, // block type
+            0, 0, 0, 16, // block size
+            0, 0, 0, 1,
+    };
+    Deserializer deserializer(buffer, sizeof(buffer));
+
+    int32_t value_1;
+    int32_t value_2;
+
+    deserializer.read(value_1);
+
+    BOOST_CHECK_THROW(
+            deserializer.read(value_2),
+            std::exception
+    );
+}
+
+BOOST_AUTO_TEST_CASE(advance_should_return_false_after_last_block) {
+    uint8_t buffer[] = {
+            0, 0, 0, 1, // block type
+            0, 0, 0, 8, // block size
+            0, 0, 0, 1, // block type
+            0, 0, 0, 8, // block size
+            0, 0, 0, 1, // block type
+            0, 0, 0, 8, // block size
+    };
+    Deserializer deserializer(buffer, sizeof(buffer));
+
+    BOOST_CHECK_EQUAL(deserializer.advance(), true);
+    BOOST_CHECK_EQUAL(deserializer.advance(), true);
+    BOOST_CHECK_EQUAL(deserializer.advance(), false);
+}
