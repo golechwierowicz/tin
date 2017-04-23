@@ -14,7 +14,7 @@ Serializer& Serializer::begin_block(uint32_t type) {
 Serializer& Serializer::write(const void* value, size_t size) {
     assert(in_block);
     if (buffer_position + size > BUFFER_SIZE) {
-        throw std::runtime_error("No space left in buffer.");
+        throw std::runtime_error("No space left in buffer");
     } else {
         memcpy(buffer + buffer_position, value, size);
         buffer_position += size;
@@ -68,7 +68,7 @@ Serializer& Serializer::write(uint64_t value) {
 
 Serializer& Serializer::write(const std::string& s) {
     if (s.size() > 0xFF) {
-        throw std::runtime_error("Only strings of size smaller than 256 are allowed.");
+        throw std::runtime_error("Only strings of size smaller than 256 are allowed");
     } else {
         write((uint8_t) s.size());
         write(s.c_str(), s.size());

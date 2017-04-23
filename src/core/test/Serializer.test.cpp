@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE(buffer_contents_should_be_correct) {
     uint16_t size;
 
     serializer.begin_block(1)
-            .write((int8_t) 0xFF)
+            .write((int8_t) 0x11)
             .write((int16_t) 0x1122)
             .write((int32_t) 0x11223344)
             .write((int64_t) 0x1122334455667788)
@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE(buffer_contents_should_be_correct) {
     uint8_t expected[] = {
             0, 0, 0, 1, // block type
             0, 0, 0, 28, // block size
-            0xFF,
+            0x11,
             0x11, 0x22,
             0x11, 0x22, 0x33, 0x44,
             0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
