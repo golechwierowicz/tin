@@ -19,5 +19,5 @@ Jeśli korzystasz z Clion aby uruchomić zestaw testów wybierz `run>run` a nast
 
 Po zbudowaniu zgodnie z instrukcją:
 ```
-$ .build/src/core/core_test
+$ ./build/src/core/core_test
 ```
