@@ -29,20 +29,23 @@ BOOST_AUTO_TEST_CASE(buffer_contents_should_be_correct) {
     uint16_t size;
 
     serializer.begin_block(1)
-            .write((int8_t) 1)
-            .write((int16_t) 1)
-            .write((int32_t) 1)
-            .write((int64_t) 1)
+            .write((int8_t) 0x11)
+            .write((int16_t) 0x1122)
+            .write((int32_t) 0x11223344)
+            .write((int64_t) 0x1122334455667788)
+            .write(std::string("aaaa"))
             .end_block();
     uint8_t* buffer = serializer.get_buffer(size);
 
     uint8_t expected[] = {
             0, 0, 0, 1, // block type
-            0, 0, 0, 23, // block size
-            1,
-            0, 1,
-            0, 0, 0, 1,
-            0, 0, 0, 0, 0, 0, 0, 1
+            0, 0, 0, 28, // block size
+            0x11,
+            0x11, 0x22,
+            0x11, 0x22, 0x33, 0x44,
+            0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
+            4, // length of the string
+            97, 97, 97, 97 // aaaa
     };
     BOOST_CHECK_EQUAL(size, sizeof(expected));
     BOOST_CHECK(memcmp(buffer, expected, sizeof(expected)) == 0);

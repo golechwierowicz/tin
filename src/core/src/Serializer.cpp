@@ -10,7 +10,7 @@ Serializer& Serializer::begin_block(int32_t type) {
     return *this;
 }
 
-Serializer& Serializer::write(void* value, size_t size) {
+Serializer& Serializer::write(const void* value, size_t size) {
     assert(in_block);
     if (buffer_position + size > BUFFER_SIZE) {
         throw std::runtime_error("No space left in buffer.");
@@ -63,4 +63,14 @@ Serializer& Serializer::write(uint32_t value) {
 Serializer& Serializer::write(uint64_t value) {
     uint64_t to_be_written = htobe64(value);
     return write(&to_be_written, sizeof(to_be_written));
+}
+
+Serializer& Serializer::write(const std::string& s) {
+    if (s.size() > 0xFF) {
+        throw std::runtime_error("Only strings of size smaller than 256 are allowed.");
+    } else {
+        write((uint8_t) s.size());
+        write(s.c_str(), s.size());
+        return *this;
+    }
 }

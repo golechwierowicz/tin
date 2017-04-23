@@ -14,7 +14,7 @@ private:
     uint16_t last_block = 0;
     bool in_block = false;
 
-    Serializer& write(void* value, size_t size);
+    Serializer& write(const void* value, size_t size);
 
 public:
     Serializer& begin_block(int32_t type);
@@ -28,9 +28,7 @@ public:
     Serializer& write(uint16_t value);
     Serializer& write(uint32_t value);
     Serializer& write(uint64_t value);
-    Serializer& write(std::string s) {
-        return *this;
-    }
+    Serializer& write(const std::string& s);
 
     uint8_t* get_buffer(uint16_t& size) {
         size = last_block;
