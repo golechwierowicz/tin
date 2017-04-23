@@ -10,7 +10,7 @@ BOOST_AUTO_TEST_CASE(values_should_be_correctly_deserialized) {
             0x11, 0x22, 0x33, 0x44,
             0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
             4, // length of the string
-            97, 97, 97, 97 // aaaa
+            'a', 'a', 'a', 'a',
     };
     Deserializer deserializer(buffer, sizeof(buffer));
 

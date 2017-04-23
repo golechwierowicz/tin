@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(buffer_contents_should_be_correct) {
             0x11, 0x22, 0x33, 0x44,
             0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
             4, // length of the string
-            97, 97, 97, 97 // aaaa
+            'a', 'a', 'a', 'a',
     };
     BOOST_CHECK_EQUAL(size, sizeof(expected));
     BOOST_CHECK(memcmp(buffer, expected, sizeof(expected)) == 0);
