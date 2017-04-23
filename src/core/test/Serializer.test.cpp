@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE(buffer_contents_should_be_correct) {
             .write((int16_t) 0x1122)
             .write((int32_t) 0x11223344)
             .write((int64_t) 0x1122334455667788)
-            .write(std::string("aaaa"))
+            .write(std::string("abcd"))
             .end_block();
     uint8_t* buffer = serializer.get_buffer(size);
 
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(buffer_contents_should_be_correct) {
             0x11, 0x22, 0x33, 0x44,
             0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
             4, // length of the string
-            'a', 'a', 'a', 'a',
+            'a', 'b', 'c', 'd',
     };
     BOOST_CHECK_EQUAL(size, sizeof(expected));
     BOOST_CHECK(memcmp(buffer, expected, sizeof(expected)) == 0);

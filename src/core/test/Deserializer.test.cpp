@@ -10,7 +10,7 @@ BOOST_AUTO_TEST_CASE(values_should_be_correctly_deserialized) {
             0x11, 0x22, 0x33, 0x44,
             0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
             4, // length of the string
-            'a', 'a', 'a', 'a',
+            'a', 'b', 'c', 'd',
     };
     Deserializer deserializer(buffer, sizeof(buffer));
 
@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE(values_should_be_correctly_deserialized) {
     BOOST_CHECK_EQUAL(int16_value, 0x1122);
     BOOST_CHECK_EQUAL(int32_value, 0x11223344);
     BOOST_CHECK_EQUAL(int64_value, 0x1122334455667788);
-    BOOST_CHECK_EQUAL(string_value, std::string("aaaa"));
+    BOOST_CHECK_EQUAL(string_value, std::string("abcd"));
 }
 
 BOOST_AUTO_TEST_CASE(multiple_blocks_handled_correctly) {
