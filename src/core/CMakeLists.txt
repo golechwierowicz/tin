@@ -14,7 +14,7 @@ if(NOT TARGET core) # run once
     enable_testing()
     find_package(Boost COMPONENTS unit_test_framework REQUIRED)
     include_directories (${Boost_INCLUDE_DIRS})
-    set(TEST_FILES test/Serializer.test.cpp src/Serializer.cpp)
+    set(TEST_FILES ${SOURCE_FILES} test/Serializer.test.cpp)
     add_executable(core_test ${TEST_FILES})
     target_link_libraries(core_test ${Boost_LIBRARIES})
 endif()
