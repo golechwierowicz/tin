@@ -17,6 +17,7 @@ if (NOT TARGET core) # run once
     find_package(Boost COMPONENTS unit_test_framework REQUIRED)
     include_directories(${Boost_INCLUDE_DIRS})
     set(TEST_FILES ${SOURCE_FILES}
+            test/Core.test.cpp
             test/Serializer.test.cpp
             test/Deserializer.test.cpp)
     add_executable(core_test ${TEST_FILES})
