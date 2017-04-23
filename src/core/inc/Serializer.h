@@ -27,7 +27,10 @@ public:
     Serializer& write(int32_t value);
     Serializer& write(int64_t value);
 
-    uint8_t* get_buffer() { return buffer; }
+    uint8_t* get_buffer(uint16_t& size) {
+        size = buffer_position;
+        return buffer;
+    }
 };
 
 #endif //TIN_SERIALIZER_H
