@@ -17,14 +17,10 @@ class Deserializer {
 public:
     Deserializer(uint8_t* buffer, uint32_t buffer_size)
             : buffer(buffer), buffer_size(buffer_size) {
-        advance();
+        next_block();
     }
 
-    /**
-     * Advance to the next block
-     * @return false if the last block was already read
-     */
-    bool advance();
+    bool next_block();
     uint32_t get_block_type() { return block_type; }
 
     Deserializer& read(int8_t& value);

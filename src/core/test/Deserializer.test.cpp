@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(multiple_blocks_handled_correctly) {
     deserializer
             .read(value_1)
             .read(value_2);
-    deserializer.advance();
+    deserializer.next_block();
     deserializer
             .read(value_3)
             .read(value_4)
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(exceeding_block_size_should_cause_exception) {
     );
 }
 
-BOOST_AUTO_TEST_CASE(advance_should_return_false_after_last_block) {
+BOOST_AUTO_TEST_CASE(next_block_should_return_false_after_last_block) {
     uint8_t buffer[] = {
             0, 0, 0, 1, // block type
             0, 0, 0, 8, // block size
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE(advance_should_return_false_after_last_block) {
     };
     Deserializer deserializer(buffer, sizeof(buffer));
 
-    BOOST_CHECK_EQUAL(deserializer.advance(), true);
-    BOOST_CHECK_EQUAL(deserializer.advance(), true);
-    BOOST_CHECK_EQUAL(deserializer.advance(), false);
+    BOOST_CHECK_EQUAL(deserializer.next_block(), true);
+    BOOST_CHECK_EQUAL(deserializer.next_block(), true);
+    BOOST_CHECK_EQUAL(deserializer.next_block(), false);
 }

@@ -1,7 +1,7 @@
 #include <cstring>
 #include "Deserializer.h"
 
-bool Deserializer::advance() {
+bool Deserializer::next_block() {
     buffer_position = last_block + block_size;
     last_block = buffer_position;
     if (buffer_position > buffer_size) {
