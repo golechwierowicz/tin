@@ -1,4 +1,5 @@
 #include <cstring>
+#include <stdexcept>
 #include "Deserializer.h"
 
 bool Deserializer::next_block() {

@@ -5,3 +5,8 @@ tin.cbp
 # Build files
 cmake-build-debug/
 build/
+
+# vagrant 
+Vagrantfile
+.vagrant
+ubuntu-xenial-16.04-cloudimg-console.log
