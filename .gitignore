@@ -10,3 +10,5 @@ build/
 Vagrantfile
 .vagrant
 ubuntu-xenial-16.04-cloudimg-console.log
+
+.DS_STORE
