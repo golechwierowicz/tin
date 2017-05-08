@@ -1,5 +1,6 @@
 #include <iostream>
 #include <Serializer.h>
+#include <Sensor.h>
 
 int main() {
     Serializer serializer;
@@ -7,5 +8,8 @@ int main() {
             .write((int32_t) 2)
             .write((int8_t) 123)
             .end_block();
+
+    Sensor sensor(serializer);
+    sensor.receive_test_msg();
     return 0;
 }

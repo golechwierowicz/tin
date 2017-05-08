@@ -5,6 +5,6 @@ set(CMAKE_CXX_STANDARD 11)
 add_subdirectory(./../core core)
 include_directories(${SHARED_LIB_INCLUDE_DIR} ./inc)
 
-set(SOURCE_FILES src/main.cpp src/Sensor.cpp inc/Config.h)
+set(SOURCE_FILES src/main.cpp src/Sensor.cpp inc/Config.h src/Config.cpp)
 add_executable(sensor ${SOURCE_FILES})
 target_link_libraries(sensor core)

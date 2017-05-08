@@ -3,6 +3,8 @@
 
 #include <cstdint>
 #include <assert.h>
+#include <stdlib.h>
+#include <string>
 
 class Serializer {
 private:
