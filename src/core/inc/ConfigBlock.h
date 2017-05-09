@@ -1,5 +1,7 @@
 #ifndef TIN_CONFIGBLOCK_H
 #define TIN_CONFIGBLOCK_H
+#include <cstdint>
+
 
 class ConfigBlock {
 private:
