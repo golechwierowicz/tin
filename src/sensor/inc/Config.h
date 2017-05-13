@@ -10,6 +10,7 @@
 class Config {
 public:
     Config(int heat_limit, int smoke_limit, int infrared_limit, in_port_t cc_port);
+    ~Config();
 
     in_port_t getCc_port() const;
     void setCc_port(in_port_t cc_port);

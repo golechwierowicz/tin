@@ -1,10 +1,13 @@
 #include <Config.h>
+#include <cstdio>
 
 //
 // Created by igor on 08.05.17.
 //
 Config::Config(int heat_limit, int smoke_limit, int infrared_limit, in_port_t cc_port) :
     heat_limit(heat_limit), smoke_limit(smoke_limit), infrared_limit(infrared_limit), cc_port(cc_port) {}
+
+Config::~Config() {}
 
 in_port_t Config::getCc_port() const {
     return cc_port;

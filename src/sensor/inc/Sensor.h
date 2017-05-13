@@ -13,16 +13,19 @@
 #include <arpa/inet.h>
 
 #include "../../core/inc/Serializer.h"
+#include "../../core/inc/Connection.h"
 #include "Config.h"
 #include <ACKBlock.h>
 
 class Sensor {
 private:
     Serializer serializer;
+    Connection* con;
+    Config* config;
 
 public:
     Sensor(Serializer serializer);
-    Config* config;
+    ~Sensor();
 
     // communication cc - sensor
     void send_ack_to_cc(ACKBlock ackBlock);
