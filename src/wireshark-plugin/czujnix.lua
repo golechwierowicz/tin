@@ -194,7 +194,7 @@ function czujnix_proto.dissector(buffer, pinfo, tree)
         else
             bytes_consumed = bytes_consumed + read
             buffer = buffer_offset(buffer, read)
-            block_tree:set_len(read)
+            block_tree:set_len(4 + read)
         end
     end
 
