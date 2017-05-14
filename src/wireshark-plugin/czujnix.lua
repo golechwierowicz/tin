@@ -177,7 +177,7 @@ function czujnix_proto.dissector(buffer, pinfo, tree)
 
     while bytes_consumed < total_len do
         local block_type = buffer(0, 4):int()
-        if block_type == nil then
+        if BLOCK_NAMES[block_type] == nil then
             return 0
         end
 
