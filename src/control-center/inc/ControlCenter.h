@@ -23,6 +23,8 @@ public:
     ~ControlCenter();
     void recv_test_sensor_msg();
     void send_test_sensor_msg();
+    void close_connection();
+    void init_connection();
 private:
     void update(ConfigBlock config_block);
 
