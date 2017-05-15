@@ -6,10 +6,11 @@
 #define TIN_CONFIG_H
 
 #include <netinet/in.h>
+#include <string>
 
 class Config {
 public:
-    Config(int heat_limit, int smoke_limit, int infrared_limit, in_port_t cc_port);
+    Config(int heat_limit, int smoke_limit, int infrared_limit, in_port_t cc_port, std::string cc_addr);
     ~Config();
 
     in_port_t getCc_port() const;
@@ -20,12 +21,15 @@ public:
     void setSmoke_limit(int smoke_limit);
     int getInfrared_limit() const;
     void setInfrared_limit(int infrared_limit);
+    std::string getCC_Addr() const;
+    void setCC_Addr(int infrared_limit);
 
 private:
     int heat_limit;
     int smoke_limit;
     int infrared_limit;
     in_port_t cc_port;
+    std::string cc_addr;
 };
 
 #endif //TIN_CONFIG_H

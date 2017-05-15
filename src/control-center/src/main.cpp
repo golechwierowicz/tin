@@ -1,10 +1,12 @@
 #include <iostream>
 #include <ControlCenter.h>
+#include <Serializer.h>
 #include <csignal>
 
 using namespace std;
 
-ControlCenter cc;
+Serializer s;
+ControlCenter cc(s);
 bool quit = false;
 
 void signal_handler( int signum ) {

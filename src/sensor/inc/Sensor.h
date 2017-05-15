@@ -20,8 +20,12 @@
 class Sensor {
 private:
     Serializer serializer;
-    Connection* con;
+    Connection* con_send;
+    Connection* con_recv;
     Config* config;
+    in_port_t _port;
+    void init_send_connection();
+    void init_recv_connection();
 
 public:
     Sensor(Serializer serializer);
@@ -31,8 +35,9 @@ public:
     void send_ack_to_cc(ACKBlock ackBlock);
     void reload_config();
     void send_test_msg();
+    void receive_cc_test_msg();
 
-    Config* init_config();
+    Config* init_config(); // consider using smart ptr.........
 };
 
 #endif // _SENSOR_H

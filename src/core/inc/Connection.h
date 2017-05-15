@@ -11,6 +11,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <zconf.h>
+#include <string>
 
 class Connection {
 public:
@@ -18,7 +19,7 @@ public:
     ~Connection();
     int create_socket();
     int close_socket();
-    void send_data(uint8_t* data, uint16_t size, in_port_t port);
+    void send_data(uint8_t* data, uint16_t size, in_port_t port, std::string addr);
     void receive_init();
     void receive_data();
 //private:

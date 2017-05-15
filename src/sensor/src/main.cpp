@@ -6,5 +6,6 @@ int main() {
     Serializer serializer;
     Sensor sensor(serializer);
     sensor.send_test_msg();
+    sensor.receive_cc_test_msg();
     return 0;
 }

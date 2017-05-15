@@ -3,9 +3,10 @@
 
 //
 // Created by igor on 08.05.17.
+// TODO: remove get/set because it is just a simple dto...
 //
-Config::Config(int heat_limit, int smoke_limit, int infrared_limit, in_port_t cc_port) :
-    heat_limit(heat_limit), smoke_limit(smoke_limit), infrared_limit(infrared_limit), cc_port(cc_port) {}
+Config::Config(int heat_limit, int smoke_limit, int infrared_limit, in_port_t cc_port, std::string cc_addr) :
+    heat_limit(heat_limit), smoke_limit(smoke_limit), infrared_limit(infrared_limit), cc_port(cc_port), cc_addr(cc_addr) {}
 
 Config::~Config() {}
 
@@ -32,6 +33,15 @@ int Config::getSmoke_limit() const {
 void Config::setSmoke_limit(int smoke_limit) {
     Config::smoke_limit = smoke_limit;
 }
+
+std::string Config::getCC_Addr() const {
+    return cc_addr;
+}
+
+void Config::setCC_Addr(int cc_addr) {
+    Config::cc_addr = cc_addr;
+}
+
 
 int Config::getInfrared_limit() const {
     return infrared_limit;
