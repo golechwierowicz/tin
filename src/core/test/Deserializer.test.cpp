@@ -32,11 +32,12 @@ BOOST_AUTO_TEST_CASE(values_should_be_correctly_deserialized) {
     BOOST_CHECK_EQUAL(int32_value, 0x11223344);
     BOOST_CHECK_EQUAL(int64_value, 0x1122334455667788);
     BOOST_CHECK_EQUAL(string_value, std::string("abcd"));
+    BOOST_CHECK_EQUAL(1, deserializer.get_block_type());
 }
 
 BOOST_AUTO_TEST_CASE(multiple_blocks_handled_correctly) {
     uint8_t buffer[] = {
-            0, 0, 0, 1, // block type
+            0, 0, 0, 7, // block type
             0, 0, 0, 16, // block size
             0, 0, 0, 1,
             0, 0, 0, 2,
@@ -68,6 +69,7 @@ BOOST_AUTO_TEST_CASE(multiple_blocks_handled_correctly) {
     BOOST_CHECK_EQUAL(value_3, 3);
     BOOST_CHECK_EQUAL(value_4, 4);
     BOOST_CHECK_EQUAL(value_5, 5);
+    BOOST_CHECK_EQUAL(deserializer.get_block_type(), 2);
 }
 
 BOOST_AUTO_TEST_CASE(insufficient_block_size_should_cause_exception) {

@@ -10,7 +10,6 @@
 #include <arpa/inet.h>
 #include <map>
 
-#include "ConfigBlock.h"
 #include "Serializer.h"
 #include "Connection.h"
 #include <vector>
@@ -27,13 +26,16 @@ public:
     ControlCenter(Serializer serializer);
     ~ControlCenter();
     void recv_test_sensor_msg();
-    void send_test_sensor_msg(in_port_t port, const char* addr);
+    void send_config_sensor_msg(in_port_t port, const char* addr);
     void close_connection();
     void init_connection();
     void broadcast_sensors();
 private:
-    void update(ConfigBlock config_block);
+    void create_sensor_config_block(std::vector<std::string> central_ips,
+            in_port_t port_id,
+            std::string cnt_ip);
     void read_sensors();
+    std::vector<std::string> get_central_ips();
 
 };
 

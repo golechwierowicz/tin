@@ -25,7 +25,7 @@ int main() {
     while(!quit) {
         sensor.send_test_msg(); // this will be ping in the future
         this_thread::sleep_for(std::chrono::seconds(2));
-        sensor.receive_cc_test_msg();
+        sensor.receive_cc_config_msg();
     }
 
     return 0;

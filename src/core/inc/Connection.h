@@ -1,7 +1,3 @@
-//
-// Created by igor on 13.05.17.
-//
-
 #ifndef TIN_CONNECTION_H
 #define TIN_CONNECTION_H
 
@@ -20,8 +16,9 @@ public:
     int create_socket();
     int close_socket();
     void send_data(uint8_t* data, uint16_t size, in_port_t port, std::string addr);
-    void receive_init();
     void receive_data();
+
+    static constexpr const char* LOCALHOST = "127.0.0.1";
 //private:
     int _socket;
 };

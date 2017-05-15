@@ -15,7 +15,7 @@
 #include "../../core/inc/Serializer.h"
 #include "../../core/inc/Connection.h"
 #include "Config.h"
-#include <ACKBlock.h>
+#include <vector>
 
 class Sensor {
 private:
@@ -24,16 +24,16 @@ private:
     Connection* con_recv;
     Config* config;
     in_port_t _port;
+    std::vector<std::string> central_ips;
     void init_recv_connection();
 public:
     Sensor(Serializer serializer);
     ~Sensor();
 
     // communication cc - sensor
-    void send_ack_to_cc(ACKBlock ackBlock);
     void reload_config();
     void send_test_msg();
-    void receive_cc_test_msg();
+    void receive_cc_config_msg();
     void close_connection();
 
     Config* init_config(); // consider using smart ptr.........

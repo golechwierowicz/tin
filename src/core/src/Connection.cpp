@@ -1,7 +1,3 @@
-//
-// Created by igor on 13.05.17.
-//
-
 #include <Connection.h>
 #include <iostream>
 
@@ -20,10 +16,6 @@ int Connection::create_socket() {
 
 int Connection::close_socket() {
     close(_socket);
-}
-
-void Connection::receive_init() {
-
 }
 
 void Connection::send_data(uint8_t* data, uint16_t size, in_port_t port, std::string addr) {
