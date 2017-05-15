@@ -8,6 +8,7 @@
 #include <zconf.h>
 #include <cstring>
 #include <arpa/inet.h>
+#include <map>
 
 #include "ConfigBlock.h"
 #include "Serializer.h"
@@ -21,16 +22,18 @@ private:
     Connection* connection;
     Connection* con_send;
     Serializer _serializer;
+    std::map<in_port_t, std::string> _sensors;
 public:
     ControlCenter(Serializer serializer);
     ~ControlCenter();
     void recv_test_sensor_msg();
-    void send_test_sensor_msg();
+    void send_test_sensor_msg(in_port_t port, const char* addr);
     void close_connection();
     void init_connection();
-    void init_sensor_connection(std::string sens_addr, in_port_t sens_port);
+    void broadcast_sensors();
 private:
     void update(ConfigBlock config_block);
+    void read_sensors();
 
 };
 

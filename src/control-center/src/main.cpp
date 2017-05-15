@@ -22,6 +22,7 @@ int main() {
 
 	while(!quit) {
 		cc.recv_test_sensor_msg();	
+        cc.broadcast_sensors();
 	}
 
 	return 0;

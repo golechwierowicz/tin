@@ -11,21 +11,8 @@ Sensor::Sensor(Serializer serializer) {
     con_recv = new Connection();
     con_send->create_socket();
     con_recv->create_socket();
-    // init_send_connection();
     _port = 4049; // dummy
     init_recv_connection();
-}
-
-void Sensor::init_send_connection() {
-    struct sockaddr_in my_name;
-
-    my_name.sin_family = AF_INET;
-    inet_pton(AF_INET, "127.0.0.1", &my_name.sin_addr);
-    my_name.sin_port = htons(config->getCc_port());
-
-    if (bind(con_send->_socket, (struct sockaddr*)&my_name, sizeof(my_name)) == -1) {
-        perror("init_send_connection: binding datagram socket");
-    }
 }
 
 void Sensor::init_recv_connection() {
@@ -79,4 +66,9 @@ void Sensor::receive_cc_test_msg() {
     d.read(string_value_1);
     d.read(string_value_2);
     std::cout << string_value_1 << " " << string_value_2;
+}
+
+void Sensor::close_connection() {
+    con_send->close_socket();
+    con_recv->close_socket();
 }

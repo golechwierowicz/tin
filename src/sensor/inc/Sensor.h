@@ -24,9 +24,7 @@ private:
     Connection* con_recv;
     Config* config;
     in_port_t _port;
-    void init_send_connection();
     void init_recv_connection();
-
 public:
     Sensor(Serializer serializer);
     ~Sensor();
@@ -36,6 +34,7 @@ public:
     void reload_config();
     void send_test_msg();
     void receive_cc_test_msg();
+    void close_connection();
 
     Config* init_config(); // consider using smart ptr.........
 };
