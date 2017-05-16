@@ -18,12 +18,16 @@ void signal_handler( int signum ) {
 }
 
 int main() {
-    signal(SIGINT, signal_handler);
+//    //signal(SIGINT, signal_handler);
+//
+//	while(!quit) {
+//        cc.recv_sensor_request_msg();
+//		cc.recv_test_sensor_msg();
+//        cc.broadcast_sensors();
+//	}
+    cc.recv_sensor_request_msg();
+    //cc.send_config_sensor_msg();
 
-	while(!quit) {
-		cc.recv_test_sensor_msg();	
-        cc.broadcast_sensors();
-	}
-
-	return 0;
+	//return 0;
+    exit(0);
 }

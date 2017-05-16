@@ -8,10 +8,10 @@
 #include <netinet/in.h>
 #include <string>
 
-class Config {
+class SensorConfig {
 public:
-    Config(int heat_limit, int smoke_limit, int infrared_limit, in_port_t cc_port, std::string cc_addr);
-    ~Config();
+    SensorConfig(int heat_limit, int smoke_limit, int infrared_limit, in_port_t cc_port, std::string cc_addr);
+    ~SensorConfig();
 
     in_port_t getCc_port() const;
     void setCc_port(in_port_t cc_port);

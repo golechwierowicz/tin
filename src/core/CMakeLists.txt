@@ -10,7 +10,7 @@ if (NOT TARGET core) # run once
     set(SOURCE_FILES
             src/Serializer.cpp inc/Serializer.h
             src/Deserializer.cpp inc/Deserializer.h
-            inc/Serializable.h inc/Connection.h src/Connection.cpp)
+            inc/Connection.h src/Connection.cpp)
     add_library(core STATIC ${SOURCE_FILES})
 
     # testing
