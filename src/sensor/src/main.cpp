@@ -4,6 +4,7 @@
 #include <csignal>
 #include <Serializer.h>
 #include <Sensor.h>
+#include <Deserializer.h>
 
 using namespace std;
 bool quit = false;
@@ -22,13 +23,11 @@ void signal_handler( int signum ) {
 int main() {
     signal(SIGINT, signal_handler);
 
-//    while(!quit) {
-//        //sensor.send_test_msg(); // this will be ping in the future
-//        sensor.send_request_msg();
-//        sensor.receive_cc_config_msg();
-//        this_thread::sleep_for(std::chrono::seconds(2));
-//    }
-    sensor.send_request_msg();
-    sensor.receive_cc_config_msg();
+    while(!quit) {
+        sensor.send_test_msg(); // this will be ping in the future
+        sensor.send_request_msg();
+        sensor.receive_cc_config_msg();
+        this_thread::sleep_for(std::chrono::seconds(2));
+    }
     exit(0);
 }

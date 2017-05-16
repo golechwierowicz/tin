@@ -51,6 +51,7 @@ void Sensor::create_request_block() {
 }
 
 void Sensor::send_test_msg() {
+    serializer.clear();
     serializer.begin_block(1)
             .write(std::string("serialized string"))
             .write(std::string("\nsent from sensor\n"))
@@ -106,7 +107,7 @@ void Sensor::receive_cc_config_msg() {
     std::cout << "Central IPs: " << std::endl;
     for(auto ip: central_ips)
         std::cout << ip << std::endl;
-    std::cout << "Control center IP: " << cc_ip << std::endl;
+    std::cout << "Control center IP: " << cc_ip << std::endl << std::endl;
 }
 
 

@@ -38,6 +38,7 @@ void ControlCenter::broadcast_sensors() {
 void ControlCenter::read_sensors() {
     // dummy, read from conf here
     // or wait for config requests
+    // currently not used - implemented waiting for sensor request to register them
     _sensors.push_back(new AddressInfo(4049, const_cast<char*>(Connection::LOCALHOST)));
 }
 
@@ -63,6 +64,7 @@ std::vector<std::string> ControlCenter::get_central_ips() { // another dummy met
 }
 
 void ControlCenter::send_config_sensor_msg(const in_port_t port, const char* addr) {
+    _serializer.clear();
     std::vector<std::string> central_ips = get_central_ips();
     uint16_t size;
     // will have to actually change the CC port in advance for the update to make any sense
@@ -82,20 +84,21 @@ void ControlCenter::recv_sensor_request_msg() {
     }
 
     int size = sizeof(buf);
-    Deserializer d(buf, size);
-    int block_type = d.get_block_type();
+    Deserializer*d = new Deserializer(buf, size);
+    int block_type = d->get_block_type();
     std::cout << "Got block type: " << block_type << std::endl;
     assert(block_type == REQUEST_CONFIG);
-    std::cout << "received config request\n";
+    std::cout << "received config request\n\n";
 
     in_port_t sensor_port;
     std::string sensor_ip;
-    d.read(sensor_port);
-    d.read(sensor_ip);
+    d->read(sensor_port);
+    d->read(sensor_ip);
     send_config_sensor_msg(sensor_port, sensor_ip.c_str());
 
     AddressInfo dto(sensor_port, const_cast<char*>(sensor_ip.c_str()));
     update_sensor_list(dto);
+    delete d;
 }
 
 void ControlCenter::recv_test_sensor_msg() {
