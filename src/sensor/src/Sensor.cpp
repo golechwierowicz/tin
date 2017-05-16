@@ -44,6 +44,8 @@ SensorConfig* Sensor::init_config() {
 void Sensor::create_request_block() {
     serializer
             .begin_block(8)
+            .write(addrInfo->getPort())
+            .write(std::string(addrInfo->getIp()))
             .end_block();
 }
 
@@ -84,10 +86,10 @@ void Sensor::receive_cc_config_msg() {
     std::cout << "Got block type: " << block_type << std::endl;
     assert(block_type == CNT_SENSOR_CONFIG);
 
-    in_port_t new_sensor_port;
+    in_port_t new_cc_port;
     int neighborhood_station_count = 0;
     std::string cc_ip;
-    d.read(new_sensor_port);
+    d.read(new_cc_port);
     d.read(cc_ip);
     d.read(neighborhood_station_count);
     central_ips.clear();
@@ -96,14 +98,14 @@ void Sensor::receive_cc_config_msg() {
         d.read(cnt_ip);
         central_ips.push_back(cnt_ip);
     }
-    reload_config(new_sensor_port);
+    reload_config(new_cc_port);
 
-    std::cout << "Successfully updated sensor with following values: " << std::endl;
-    std::cout << "Sensor Port: " << new_sensor_port << std::endl;
-    std::cout << "Central ips: " << std::endl;
+    std::cout << "Successfully updated sensor with the following values: " << std::endl;
+    std::cout << "CC Port: " << new_cc_port << std::endl;
+    std::cout << "Central IPs: " << std::endl;
     for(auto ip: central_ips)
         std::cout << ip << std::endl;
-    std::cout << "Control center ip: " << cc_ip << std::endl;
+    std::cout << "Control center IP: " << cc_ip << std::endl;
 }
 
 

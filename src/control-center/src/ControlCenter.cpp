@@ -66,7 +66,7 @@ std::vector<std::string> ControlCenter::get_central_ips() { // another dummy met
 void ControlCenter::send_config_sensor_msg(const in_port_t port, const char* addr) {
     std::vector<std::string> central_ips = get_central_ips();
     uint16_t size;
-    // will have to change the new port sent to sensor - now it's the CC port
+    // will have to actually change the CC port in advance for the update to make any sense
     create_sensor_config_block(central_ips, ControlCenter::port, Connection::LOCALHOST);
     uint8_t* buff = _serializer.get_buffer(size);
     connection->send_data(buff, size, port, addr); 
@@ -88,8 +88,13 @@ void ControlCenter::recv_sensor_request_msg() {
     std::cout << "Got block type: " << block_type << std::endl;
     assert(block_type == REQUEST_CONFIG);
     std::cout << "received config request\n";
+    in_port_t sensor_port;
+    std::string sensor_ip;
+    d.read(sensor_port);
+    d.read(sensor_ip);
     //send_config_sensor_msg(ControlCenter::port, Connection::LOCALHOST);
-    send_config_sensor_msg(4049, Connection::LOCALHOST);
+    //send_config_sensor_msg(4049, Connection::LOCALHOST);
+    send_config_sensor_msg(sensor_port, sensor_ip.c_str());
 }
 
 void ControlCenter::recv_test_sensor_msg() {

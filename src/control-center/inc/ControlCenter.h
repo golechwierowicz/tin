@@ -16,7 +16,7 @@
 
 class ControlCenter {
 private:
-    const static in_port_t port = 4048;
+    const static in_port_t port = 4040;
     Connection* connection;
     Connection* con_send;
     Serializer _serializer;
