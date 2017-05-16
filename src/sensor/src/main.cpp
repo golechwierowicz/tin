@@ -20,17 +20,15 @@ void signal_handler( int signum ) {
 }
 
 int main() {
-    //signal(SIGINT, signal_handler);
+    signal(SIGINT, signal_handler);
 
 //    while(!quit) {
-//        sensor.send_test_msg(); // this will be ping in the future
-//        // we will need to think how to handle the sleep/tim between send/recv calls and not missing conf packets from CC
-//        this_thread::sleep_for(std::chrono::seconds(2));
+//        //sensor.send_test_msg(); // this will be ping in the future
 //        sensor.send_request_msg();
 //        sensor.receive_cc_config_msg();
+//        this_thread::sleep_for(std::chrono::seconds(2));
 //    }
     sensor.send_request_msg();
     sensor.receive_cc_config_msg();
-    //return 0;
     exit(0);
 }

@@ -37,6 +37,7 @@ private:
             std::string cnt_ip);
     void read_sensors();
     std::vector<std::string> get_central_ips();
+    void update_sensor_list(AddressInfo);
 
 };
 

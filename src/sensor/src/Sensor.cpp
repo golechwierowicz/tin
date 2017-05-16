@@ -35,6 +35,7 @@ Sensor::~Sensor() {
     con_send->close_socket();
     delete con_send;
     delete con_recv;
+    delete addrInfo;
 }
 // to be changed, needs to read conf from file/info sent by CC/any kind of init conf
 SensorConfig* Sensor::init_config() {

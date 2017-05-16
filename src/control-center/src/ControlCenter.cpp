@@ -12,7 +12,6 @@ ControlCenter::ControlCenter(Serializer serializer) {
     con_send = new Connection();
     connection->create_socket();
     con_send->create_socket();
-    read_sensors();
     init_connection();
 }
 
@@ -88,13 +87,15 @@ void ControlCenter::recv_sensor_request_msg() {
     std::cout << "Got block type: " << block_type << std::endl;
     assert(block_type == REQUEST_CONFIG);
     std::cout << "received config request\n";
+
     in_port_t sensor_port;
     std::string sensor_ip;
     d.read(sensor_port);
     d.read(sensor_ip);
-    //send_config_sensor_msg(ControlCenter::port, Connection::LOCALHOST);
-    //send_config_sensor_msg(4049, Connection::LOCALHOST);
     send_config_sensor_msg(sensor_port, sensor_ip.c_str());
+
+    AddressInfo dto(sensor_port, const_cast<char*>(sensor_ip.c_str()));
+    update_sensor_list(dto);
 }
 
 void ControlCenter::recv_test_sensor_msg() {
@@ -117,4 +118,16 @@ void ControlCenter::recv_test_sensor_msg() {
 
 void ControlCenter::close_connection() {
     connection->close_socket();
+}
+
+void ControlCenter::update_sensor_list(AddressInfo info) {
+    bool contains = false;
+    for (AddressInfo* sensor : _sensors) {
+        if (sensor->getIp() == info.getIp() && std::string(sensor->getIp()) == std::string(info.getIp())) {
+            break;
+        }
+    }
+    if (contains == false) {
+        _sensors.push_back(new AddressInfo(info.getPort(), const_cast<char*>(info.getIp())));
+    }
 }
