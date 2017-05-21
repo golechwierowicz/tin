@@ -11,8 +11,9 @@ if (NOT TARGET core) # run once
             src/Serializer.cpp inc/Serializer.h
             src/Deserializer.cpp inc/Deserializer.h
             src/Connection.cpp inc/Connection.h
-            src/UdpServer.cpp inc/UdpServer.h)
-    add_library(core STATIC ${SOURCE_FILES})
+            src/UdpServer.cpp inc/UdpServer.h
+            inc/blocks/AbstractBlock.h)
+    add_library(core STATIC ${SOURCE_FILES} src/blocks/DebugBlock.cpp inc/blocks/DebugBlock.h)
 
     # testing
     enable_testing()
