@@ -4,8 +4,10 @@
 #include <cstdint>
 
 class UdpServer {
+private:
+    int ipv4_socket_fd;
 public:
-    UdpServer();
+    UdpServer(uint16_t port);
     ~UdpServer();
     void recieve(uint8_t* buffer, uint16_t& size);
 };

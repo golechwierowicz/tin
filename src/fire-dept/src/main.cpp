@@ -5,7 +5,7 @@ int main() {
     log("Starting Fire Department Server");
 
     bool running = true;
-    UdpServer server;
+    UdpServer server(1234);
 
     uint8_t message_buffer[2048];
     uint16_t message_size;
