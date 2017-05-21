@@ -11,7 +11,7 @@ if (NOT TARGET core) # run once
             src/Serializer.cpp inc/Serializer.h
             src/Deserializer.cpp inc/Deserializer.h
             src/Connection.cpp inc/Connection.h
-            )
+            src/UdpServer.cpp inc/UdpServer.h)
     add_library(core STATIC ${SOURCE_FILES})
 
     # testing

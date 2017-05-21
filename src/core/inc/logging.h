@@ -4,6 +4,7 @@
 #include <iostream>
 #include <iomanip>
 #include <ctime>
+#include <cstring>
 
 enum LogLevel { info, debug, error, warn };
 
@@ -36,17 +37,9 @@ void log_info(T& data) {
     log(data, LogLevel::info);
 }
 
-void log_info(const char* str) {
-    log(str, LogLevel::info);
-}
-
 template <typename T>
 void log_debug(T& data) {
     log(data, LogLevel::debug);
-}
-
-void log_debug(const char* str) {
-    log(str, LogLevel::debug);
 }
 
 template <typename T>
@@ -54,19 +47,15 @@ void log_error(T& data) {
     log(data, LogLevel::error);
 }
 
-void log_error(const char* str) {
-    log(str, LogLevel::error);
-}
-
 template <typename T>
 void log_warn(T& data) {
     log(data, LogLevel::warn);
 }
 
-void log_warn(const char* str) {
-    log(str, LogLevel::warn);
+inline void log_errno() {
+    const char* error_message = strerror(errno);
+    log_error(error_message);
 }
-
 
 
 #endif //TIN_LOGGING_H
