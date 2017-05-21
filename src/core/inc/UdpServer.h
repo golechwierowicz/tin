@@ -2,6 +2,7 @@
 #define TIN_UDPSERVER_H
 
 #include <cstdint>
+#include <cstdlib>
 
 class UdpServer {
 private:
@@ -9,7 +10,7 @@ private:
 public:
     UdpServer(uint16_t port);
     ~UdpServer();
-    void recieve(uint8_t* buffer, uint16_t& size);
+    void receive(uint8_t* buffer, size_t buffer_size, size_t& data_length);
 };
 
 

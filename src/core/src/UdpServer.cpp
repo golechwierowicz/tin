@@ -7,7 +7,7 @@
 UdpServer::UdpServer(uint16_t port) {
     ipv4_socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
     if (ipv4_socket_fd < 0) {
-        log_error("Socket creation failed");
+        log_error("UdpServer: Socket creation failed");
         log_errno();
         exit(0);
     }
@@ -22,7 +22,7 @@ UdpServer::UdpServer(uint16_t port) {
     int ipv4_bind_result = bind(ipv4_socket_fd, (struct sockaddr *)&ipv4_address, sizeof(ipv4_address));
 
     if (ipv4_bind_result < 0) {
-        log_error("Socket bind failed");
+        log_error("UdpServer: Socket bind failed");
         log_errno();
         exit(0);
     }
@@ -31,13 +31,30 @@ UdpServer::UdpServer(uint16_t port) {
 }
 
 UdpServer::~UdpServer() {
-    log_debug("UdpServer: Disposed");
     close(ipv4_socket_fd);
+    log_debug("UdpServer: Disposed");
 }
 
-void UdpServer::recieve(uint8_t* buffer, uint16_t& size) {
+void UdpServer::receive(uint8_t* buffer, size_t buffer_size, size_t& data_length) {
     log_debug("UdpServer: Waiting for message");
-    size = 0;
-    sleep(3);
+
+    struct sockaddr_in remote_address;
+    socklen_t addrlen = sizeof(remote_address);
+
+    ssize_t value = recvfrom(
+            ipv4_socket_fd,
+            buffer,
+            buffer_size,
+            0, // FLAGS
+            (struct sockaddr *)&remote_address, &addrlen);
+
+    if(value < 0) {
+        log_error("UdpServer: Message receive failed");
+        log_errno();
+        data_length = 0;
+    } else {
+        log_debug("UdpServer: Message received");
+        data_length = (size_t) value;
+    }
 }
 
