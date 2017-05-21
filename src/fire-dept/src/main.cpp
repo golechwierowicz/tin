@@ -1,5 +1,6 @@
 #include <iostream>
+#include "logging.h"
 
 int main() {
-    std::cout << "It works!" << std::endl;
+    log("It works!");
 }

@@ -20,7 +20,7 @@ if (NOT TARGET core) # run once
     set(TEST_FILES ${SOURCE_FILES}
             test/Core.test.cpp
             test/Serializer.test.cpp
-            test/Deserializer.test.cpp src/Connection.cpp inc/Connection.h)
+            test/Deserializer.test.cpp src/Connection.cpp inc/Connection.h inc/logging.h)
     add_executable(core_test ${TEST_FILES})
     target_link_libraries(core_test ${Boost_LIBRARIES})
 endif ()
