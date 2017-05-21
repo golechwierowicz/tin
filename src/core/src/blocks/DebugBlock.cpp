@@ -19,9 +19,9 @@ void DebugBlock::deserialize(Deserializer& deserializer) {
 
 std::string DebugBlock::toString() {
     std::stringstream ss;
-    ss << "DebugBlock ["
-       << "u8: " << u8_value << ", "
-       << "i64: " << i64_value << ", "
+    ss << "DebugBlock [" << std::hex
+       << "u8: 0x" << (unsigned) u8_value << ", "
+       << "i64: 0x" << i64_value << ", "
        << "str: " << str_value
        << "]";
 

@@ -4,7 +4,7 @@
 #include <Serializer.h>
 #include <Deserializer.h>
 
-enum BlockType { debug };
+enum BlockType { bt_debug = 0 };
 
 class AbstractBlock {
 public:

@@ -5,7 +5,8 @@
 #include "AbstractBlock.h"
 
 class DebugBlock : public AbstractBlock {
-    BlockType type = BlockType::debug;
+public:
+    BlockType type = bt_debug;
 
     uint8_t u8_value;
     int64_t i64_value;
