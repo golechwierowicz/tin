@@ -7,10 +7,8 @@
 class UdpServer {
 private:
     int socket_fd;
-
-    void create_socket(uint16_t port);
 public:
-    UdpServer(uint16_t port);
+    void open(uint16_t port);
     ~UdpServer();
     void receive(uint8_t* buffer, size_t buffer_size, size_t& data_length);
 };

@@ -1,4 +1,5 @@
 #include <UdpServer.h>
+#include <Deserializer.h>
 #include "logging.h"
 
 #define BUFFER_SIZE 2048
@@ -7,7 +8,14 @@ int main() {
     log("Starting Fire Department Server");
 
     bool running = true;
-    UdpServer server(1234);
+
+    UdpServer server;
+    try {
+        server.open(1234);
+    } catch(const std::runtime_error& error) {
+        log_error(error);
+        exit(1);
+    }
 
     uint8_t message_buffer[BUFFER_SIZE];
     size_t message_size;
@@ -16,7 +24,9 @@ int main() {
 
     while(running) {
         server.receive(message_buffer, BUFFER_SIZE - 1, message_size);
-        message_buffer[message_size] = 0; // terminate ascii string
+
+        Deserializer deserializer(message_buffer, (uint32_t) message_size);
+
         log_debug(message_buffer);
     }
 }

@@ -1,20 +1,17 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <sstream>
 #include "UdpServer.h"
 #include "logging.h"
 
-UdpServer::UdpServer(uint16_t port) {
-    create_socket(port);
-    log_debug("UdpServer: Created");
-}
-
-void UdpServer::create_socket(uint16_t port) {
+void UdpServer::open(uint16_t port) {
     socket_fd = socket(AF_INET6, SOCK_DGRAM, 0);
     if (socket_fd < 0) {
-        log_error("UdpServer: Socket creation failed");
-        log_errno();
-        exit(0);
+        std::stringstream ss;
+        ss << "UdpServer: Socket creation failed ("
+           << strerror(errno) << ")";
+        throw std::runtime_error(ss.str());
     }
 
     struct sockaddr_in6 address;
@@ -27,10 +24,13 @@ void UdpServer::create_socket(uint16_t port) {
     int bind_result = bind(socket_fd, (struct sockaddr *)&address, sizeof(address));
 
     if (bind_result < 0) {
-        log_error("UdpServer: Socket bind failed");
-        log_errno();
-        exit(0);
+        std::stringstream ss;
+        ss << "UdpServer: Socket bind failed ("
+           << strerror(errno) << ")";
+        throw std::runtime_error(ss.str());
     }
+
+    log_debug("UdpServer: Opened");
 }
 
 UdpServer::~UdpServer() {
@@ -52,9 +52,10 @@ void UdpServer::receive(uint8_t* buffer, size_t buffer_size, size_t& data_length
             (struct sockaddr *)&remote_address, &addrlen);
 
     if(value < 0) {
-        log_error("UdpServer: Message receive failed");
-        log_errno();
-        data_length = 0;
+        std::stringstream ss;
+        ss << "UdpServer: Message receive failed ("
+           << strerror(errno) << ")";
+        throw std::runtime_error(ss.str());
     } else {
         log_debug("UdpServer: Message received");
         data_length = (size_t) value;
