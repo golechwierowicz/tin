@@ -75,3 +75,10 @@ Serializer& Serializer::write(const std::string& s) {
         return *this;
     }
 }
+
+void Serializer::clear() {
+    buffer_position = 0;
+    last_block = 0;
+    bool in_block = false;
+    std::fill_n(buffer, BUFFER_SIZE, 0);
+}

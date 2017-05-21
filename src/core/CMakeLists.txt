@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.7)
 
 set(CMAKE_CXX_STANDARD 11)
 
@@ -10,7 +10,7 @@ if (NOT TARGET core) # run once
     set(SOURCE_FILES
             src/Serializer.cpp inc/Serializer.h
             src/Deserializer.cpp inc/Deserializer.h
-            inc/Serializable.h)
+            inc/Connection.h src/Connection.cpp)
     add_library(core STATIC ${SOURCE_FILES})
 
     # testing
@@ -20,7 +20,7 @@ if (NOT TARGET core) # run once
     set(TEST_FILES ${SOURCE_FILES}
             test/Core.test.cpp
             test/Serializer.test.cpp
-            test/Deserializer.test.cpp)
+            test/Deserializer.test.cpp src/Connection.cpp inc/Connection.h)
     add_executable(core_test ${TEST_FILES})
     target_link_libraries(core_test ${Boost_LIBRARIES})
 endif ()

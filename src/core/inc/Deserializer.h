@@ -5,6 +5,7 @@
 #include <memory>
 
 class Deserializer {
+private:
     uint8_t* buffer;
     uint32_t buffer_size;
     uint32_t buffer_position;
