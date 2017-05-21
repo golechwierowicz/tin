@@ -15,7 +15,8 @@ int main() {
     log("Fire Department Server listening");
 
     while(running) {
-        server.receive(message_buffer, BUFFER_SIZE, message_size);
-        log_debug("Message recieved");
+        server.receive(message_buffer, BUFFER_SIZE - 1, message_size);
+        message_buffer[message_size] = 0; // terminate ascii string
+        log_debug(message_buffer);
     }
 }
