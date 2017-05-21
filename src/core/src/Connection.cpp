@@ -1,5 +1,6 @@
 #include <Connection.h>
 #include <iostream>
+#include <unistd.h>
 
 Connection::Connection() {}
 

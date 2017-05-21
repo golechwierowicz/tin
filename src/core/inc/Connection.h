@@ -6,7 +6,6 @@
 #include <cstdlib>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <zconf.h>
 #include <string>
 
 class Connection {
