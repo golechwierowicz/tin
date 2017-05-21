@@ -6,7 +6,9 @@
 
 class UdpServer {
 private:
-    int ipv4_socket_fd;
+    int socket_fd;
+
+    void create_socket(uint16_t port);
 public:
     UdpServer(uint16_t port);
     ~UdpServer();
