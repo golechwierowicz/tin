@@ -7,6 +7,8 @@
 #include "AddressInfo.h"
 
 ControlCenter::ControlCenter(Serializer serializer) : serializer(serializer) {
+    connection.open_socket();
+    con_send.open_socket();
     init_connection();
 }
 
@@ -108,6 +110,7 @@ void ControlCenter::recv_test_sensor_msg() {
 
 void ControlCenter::close_connection() {
     connection.close_socket();
+    con_send.close_socket();
 }
 
 void ControlCenter::update_sensor_list(AddressInfo info) {
