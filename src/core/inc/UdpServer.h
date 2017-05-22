@@ -3,6 +3,8 @@
 
 #include <cstdint>
 #include <cstdlib>
+#include <sstream>
+#include <cstring>
 
 class UdpServer {
 private:
@@ -11,6 +13,16 @@ public:
     void open(uint16_t port);
     ~UdpServer();
     void receive(uint8_t* buffer, size_t buffer_size, size_t& data_length);
+
+    void throwErrno(const char* message) {
+        std::stringstream ss;
+        ss << "UdpServer: "
+           << message
+           << " ("
+           << strerror(errno)
+           << ")";
+        throw std::runtime_error(ss.str());
+    }
 };
 
 

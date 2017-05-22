@@ -7,7 +7,8 @@ set(SHARED_LIB_INCLUDE_DIR ${SHARED_LIB_INCLUDE_DIR} PARENT_SCOPE)
 
 if (NOT TARGET core) # run once
     include_directories(${SHARED_LIB_INCLUDE_DIR})
-    set(SOURCE_FILES inc/logging.h
+    set(SOURCE_FILES
+            inc/Logger.h
             src/Serializer.cpp inc/Serializer.h
             src/Deserializer.cpp inc/Deserializer.h
             src/Connection.cpp inc/Connection.h

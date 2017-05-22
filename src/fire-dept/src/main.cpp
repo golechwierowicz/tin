@@ -2,7 +2,7 @@
 #include <Deserializer.h>
 #include <blocks/AbstractBlock.h>
 #include <blocks/DebugBlock.h>
-#include "logging.h"
+#include "Logger.h"
 
 #define BUFFER_SIZE 2048
 
@@ -14,44 +14,40 @@ void handle_message(uint8_t* message_buffer, size_t message_size) {
             case bt_debug: {
                 DebugBlock block;
                 block.deserialize(deserializer);
-                auto str = block.toString();
-                log("Received message");
-                log(str);
-            }
-                break;
+                log() << "Received: " << block.toString();
+            } break;
             default: {
-                log("Received an unknown message");
-            }
-                break;
+                log() << "Received an unknown message";
+            } break;
         }
     }
 }
 
 int main() {
-    log("Starting Fire Department Server");
+    log() << "Starting Fire Department Server";
 
     bool running = true;
 
     UdpServer server;
     try {
         server.open(1234);
-    } catch (const std::runtime_error& error) {
-        log_exception(error);
+    } catch (const std::runtime_error& e) {
+        logError() << e.what();
         exit(1);
     }
 
     uint8_t message_buffer[BUFFER_SIZE];
     size_t message_size;
 
-    log("Fire Department Server listening");
+    log() << "Fire Department Server listening";
 
     while (running) {
         try {
             server.receive(message_buffer, BUFFER_SIZE - 1, message_size);
             handle_message(message_buffer, message_size);
 
-        } catch (const std::runtime_error& error) {
-            log_exception(error);
+        } catch (const std::runtime_error& e) {
+            logError() << e.what();
             continue;
         }
     }
