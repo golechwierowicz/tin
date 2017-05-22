@@ -3,6 +3,9 @@
 #include <Deserializer.h>
 #include <Connection.h>
 #include <CommonBlock.h>
+#include <blocks/BlockReader.h>
+#include <blocks/CntSensorConfigBlock.h>
+#include <Logger.h>
 
 Sensor::Sensor(Serializer serializer) {
     // dummy method, will need to implement reading conf form file
@@ -83,31 +86,23 @@ void Sensor::receive_cc_config_msg() {
     }
 
     int size = sizeof(buf);
-    Deserializer d(buf, size);
-    int block_type = d.get_block_type();
-    std::cout << "Got block type: " << block_type << std::endl;
-    assert(block_type == CNT_SENSOR_CONFIG);
 
-    in_port_t new_cc_port;
-    int neighborhood_station_count = 0;
-    std::string cc_ip;
-    d.read(new_cc_port);
-    d.read(cc_ip);
-    d.read(neighborhood_station_count);
-    central_ips.clear();
-    for(uint16_t i = 0; i < neighborhood_station_count; i++) {
-        std::string cnt_ip;
-        d.read(cnt_ip);
-        central_ips.push_back(cnt_ip);
+    BlockReader reader(buf, size);
+
+    for(AbstractBlock* block : reader.blocks) {
+        if(block->type == bt_cnt_sensor_config) {
+            auto configBlock = (CntSensorConfigBlock*) block;
+
+            reload_config(configBlock->port_id);
+
+            central_ips.clear();
+            for(auto& cnt_ip : configBlock->central_ips) {
+                central_ips.push_back(cnt_ip);
+            }
+
+            log() << "Message: " << configBlock->toString();
+        }
     }
-    reload_config(new_cc_port);
-
-    std::cout << "Successfully updated sensor with the following values: " << std::endl;
-    std::cout << "CC Port: " << new_cc_port << std::endl;
-    std::cout << "Central IPs: " << std::endl;
-    for(auto ip: central_ips)
-        std::cout << ip << std::endl;
-    std::cout << "Control center IP: " << cc_ip << std::endl << std::endl;
 }
 
 
