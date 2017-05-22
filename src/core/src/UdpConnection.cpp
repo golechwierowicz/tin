@@ -57,7 +57,7 @@ void UdpConnection::send_data(uint8_t* data, uint16_t size, in_port_t port, std:
     }
 }
 
-sockaddr_4or6 UdpConnection::getAddress(std::string& addr, in_port_t port) {
+sockaddr_4or6 UdpConnection::getAddress(std::string addr, in_port_t port) {
     sockaddr_4or6 address;
 
     address.ipv4 = true;

@@ -32,12 +32,12 @@ public:
     /* DEPRECATED */
     void send_data(uint8_t* data, uint16_t size, in_port_t port, std::string addr);
 
-    sockaddr_4or6 getAddress(std::string& addr, in_port_t port);
+    static sockaddr_4or6 getAddress(std::string addr, in_port_t port);
     void send_msg(uint8_t* buffer, size_t len, sockaddr_4or6& address);
 
     void receive(uint8_t* buffer, size_t buffer_size, size_t& data_length);
 
-    void raiseError(const char *message, const char *error = strerror(errno)) {
+    static void raiseError(const char *message, const char *error = strerror(errno)) {
         std::stringstream ss;
         ss << "UdpConnection: "
            << message
