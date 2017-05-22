@@ -1,4 +1,4 @@
-#include <UdpServer.h>
+#include <UdpConnection.h>
 #include <Deserializer.h>
 #include <blocks/AbstractBlock.h>
 #include <blocks/DebugBlock.h>
@@ -20,9 +20,9 @@ int main() {
 
     bool running = true;
 
-    UdpServer server;
+    UdpConnection server;
     try {
-        server.open(1234);
+        server.bind(1234);
     } catch (const std::runtime_error& e) {
         logError() << e.what();
         exit(1);
