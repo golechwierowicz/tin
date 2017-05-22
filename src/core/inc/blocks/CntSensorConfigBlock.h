@@ -8,12 +8,11 @@
 
 class CntSensorConfigBlock : public AbstractBlock {
 public:
-    BlockType type = bt_cnt_sensor_config;
-
     std::vector<std::string> central_ips;
     in_port_t port_id;
     std::string cnt_ip;
 
+    CntSensorConfigBlock() : AbstractBlock(bt_cnt_sensor_config) {}
     CntSensorConfigBlock(std::vector<std::string> central_ips,
                          in_port_t port_id,
                          std::string cnt_ip);

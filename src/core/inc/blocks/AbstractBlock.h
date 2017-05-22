@@ -8,6 +8,8 @@ enum BlockType { bt_debug = 0, bt_cnt_sensor_config = 7 };
 
 class AbstractBlock {
 public:
+    AbstractBlock(BlockType type) : type(type) {}
+
     BlockType type;
 
     virtual void serialize(Serializer& serializer) = 0;

@@ -71,13 +71,14 @@ void Sensor::receive_cc_config_msg() {
 
     addrlen = sizeof(cli_name);
 
-    if (recvfrom(con_recv.socket_fd, buf, Serializer::BUFFER_SIZE, 0, (struct sockaddr*)&cli_name, &addrlen) == -1) {
+    ssize_t bytes = recvfrom(con_recv.socket_fd, buf, Serializer::BUFFER_SIZE, 0, (struct sockaddr*)&cli_name, &addrlen);
+    if (bytes < 0) {
         perror("receiving datagram packet");
     }
 
-    size_t size = sizeof(buf);
+    logDebug() << "Received buffer size " << bytes;
 
-    BlockReader reader(buf, size);
+    BlockReader reader(buf, bytes);
 
     for(AbstractBlock* block : reader.blocks) {
         if(block->type == bt_cnt_sensor_config) {
