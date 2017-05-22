@@ -7,6 +7,22 @@
 #include "UdpConnection.h"
 #include "Logger.h"
 
+std::string sockaddr_4or6::toString() {
+    char* addr[200];
+    if(ipv4) {
+        inet_ntop(AF_INET, &addr4, (char*)addr, sizeof(addr4));
+    } else {
+        inet_ntop(AF_INET6, &addr6, (char*)addr, sizeof(addr6));
+    }
+
+    std::stringstream ss;
+    ss << "Sockaddr4or6 ["
+       << (ipv4 ? "ipv4" : "ipv6")
+       << ", " << addr << "]";
+    return ss.str();
+}
+
+
 void UdpConnection::open_socket() {
     socket_fd = socket(AF_INET6, SOCK_DGRAM, 0);
     if (socket_fd < 0) {
@@ -94,10 +110,10 @@ void UdpConnection::send_msg(uint8_t *buffer, size_t len, sockaddr_4or6 &address
     }
 }
 
-void UdpConnection::receive(uint8_t* buffer, size_t buffer_size, size_t& data_length) {
+sockaddr_4or6 UdpConnection::receive(uint8_t* buffer, size_t buffer_size, size_t& data_length) {
     logDebug() << "UdpConnection: Waiting for message";
 
-    struct sockaddr_in remote_address;
+    struct sockaddr_in6 remote_address;
     socklen_t addrlen = sizeof(remote_address);
 
     ssize_t value = recvfrom(
@@ -113,4 +129,9 @@ void UdpConnection::receive(uint8_t* buffer, size_t buffer_size, size_t& data_le
         logDebug() << "UdpConnection: Message received";
         data_length = (size_t) value;
     }
+
+    sockaddr_4or6 sender;
+    sender.ipv4 = false; // ipv4 addresses are mapped as https://en.wikipedia.org/wiki/IPv6#IPv4-mapped_IPv6_addresses
+    sender.addr6 = remote_address;
+    return sender;
 }

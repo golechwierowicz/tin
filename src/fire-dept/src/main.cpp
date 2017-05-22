@@ -36,7 +36,8 @@ int main() {
 
     while (running) {
         try {
-            server.receive(message_buffer, BUFFER_SIZE - 1, message_size);
+            auto addr = server.receive(message_buffer, BUFFER_SIZE - 1, message_size);
+            logDebug() << "Message from: " << addr.toString();
             handle_message(message_buffer, message_size);
 
         } catch (const std::runtime_error& e) {

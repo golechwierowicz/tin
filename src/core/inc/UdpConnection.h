@@ -11,6 +11,8 @@ struct sockaddr_4or6 {
     bool ipv4;
     struct sockaddr_in addr4;
     struct sockaddr_in6 addr6;
+
+    std::string toString();
 };
 
 class UdpConnection {
@@ -35,7 +37,7 @@ public:
     static sockaddr_4or6 getAddress(std::string addr, in_port_t port);
     void send_msg(uint8_t* buffer, size_t len, sockaddr_4or6& address);
 
-    void receive(uint8_t* buffer, size_t buffer_size, size_t& data_length);
+    sockaddr_4or6 receive(uint8_t* buffer, size_t buffer_size, size_t& data_length);
 
     static void raiseError(const char *message, const char *error = strerror(errno)) {
         std::stringstream ss;
