@@ -7,13 +7,13 @@
 #include "UdpConnection.h"
 #include "Logger.h"
 
-UdpConnection::UdpConnection() {
+void UdpConnection::open_socket() {
     socket_fd = socket(AF_INET6, SOCK_DGRAM, 0);
     if (socket_fd < 0) {
         raiseError("socket() failed");
     }
-
-    logDebug() << "UdpConnection: Socket created";
+    open = true;
+    logDebug() << "UdpConnection: Socket opened";
 }
 
 void UdpConnection::bind_port(uint16_t port)  {
@@ -30,12 +30,19 @@ void UdpConnection::bind_port(uint16_t port)  {
         raiseError("bind() failed");
     }
 
-    logDebug() << "UdpConnection: Bind succeded";
+    logDebug() << "UdpConnection: Socket bound";
+}
+
+void UdpConnection::close_socket() {
+    if(open) {
+        open = false;
+        close(socket_fd);
+        logDebug() << "UdpConnection: Socket closed";
+    }
 }
 
 UdpConnection::~UdpConnection() {
-    close(socket_fd);
-    logDebug() << "UdpConnection: Disposed";
+    close_socket();
 }
 
 void UdpConnection::send(uint8_t* buffer, size_t buffer_size, const std::string& addr, in_port_t port) {

@@ -10,9 +10,14 @@
 class UdpConnection {
 private:
     int socket_fd;
+    bool open = false;
 public:
-    UdpConnection();
+    static constexpr const char* LOCALHOST = "127.0.0.1";
+
     ~UdpConnection();
+
+    void open_socket();
+    void close_socket();
 
     void bind_port(uint16_t port);
 

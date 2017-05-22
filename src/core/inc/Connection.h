@@ -8,6 +8,9 @@
 #include <arpa/inet.h>
 #include <string>
 
+/*
+ * DEPRECATED - use UdpConnection instead
+ */
 class Connection {
 public:
     Connection();

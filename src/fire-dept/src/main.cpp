@@ -20,7 +20,9 @@ int main() {
     bool running = true;
 
     UdpConnection server;
+
     try {
+        server.open_socket();
         server.bind_port(1234);
     } catch (const std::runtime_error& e) {
         logError() << e.what();
