@@ -13,6 +13,7 @@ if (NOT TARGET core) # run once
             src/Deserializer.cpp inc/Deserializer.h
             src/Connection.cpp inc/Connection.h
             src/UdpServer.cpp inc/UdpServer.h
+            src/blocks/BlockReader.cpp inc/blocks/BlockReader.h
             inc/blocks/AbstractBlock.h
             src/blocks/DebugBlock.cpp inc/blocks/DebugBlock.h)
     add_library(core STATIC ${SOURCE_FILES})

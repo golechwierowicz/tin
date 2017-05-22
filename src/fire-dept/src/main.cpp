@@ -2,24 +2,16 @@
 #include <Deserializer.h>
 #include <blocks/AbstractBlock.h>
 #include <blocks/DebugBlock.h>
+#include <blocks/BlockReader.h>
 #include "Logger.h"
 
 #define BUFFER_SIZE 2048
 
 void handle_message(uint8_t* message_buffer, size_t message_size) {
-    Deserializer deserializer(message_buffer, (uint32_t) message_size);
+    BlockReader reader(message_buffer, message_size);
 
-    while (deserializer.next_block()) {
-        switch (deserializer.get_block_type()) {
-            case bt_debug: {
-                DebugBlock block;
-                block.deserialize(deserializer);
-                log() << "Received: " << block.toString();
-            } break;
-            default: {
-                log() << "Received an unknown message";
-            } break;
-        }
+    for(AbstractBlock* block : reader.blocks) {
+        log() << "Message: " << block->toString();
     }
 }
 
