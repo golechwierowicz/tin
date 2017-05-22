@@ -1,32 +1,23 @@
 #include <ControlCenter.h>
 #include <Deserializer.h>
-#include <Serializer.h>
-#include <Connection.h>
 #include <CommonBlock.h>
 #include <iostream>
 #include <blocks/CntSensorConfigBlock.h>
+#include <Logger.h>
 #include "AddressInfo.h"
 
-ControlCenter::ControlCenter(Serializer serializer) {
-    _serializer = serializer;
-    connection = new Connection();
-    con_send = new Connection();
-    connection->create_socket();
-    con_send->create_socket();
+ControlCenter::ControlCenter(Serializer serializer) : serializer(serializer) {
     init_connection();
 }
 
 ControlCenter::~ControlCenter() {}
 
 void ControlCenter::init_connection() {
-    struct sockaddr_in my_name;
-
-    my_name.sin_family = AF_INET;
-    inet_pton(AF_INET, Connection::LOCALHOST, &my_name.sin_addr);
-    my_name.sin_port = htons(ControlCenter::port);
-
-    if (bind(connection->_socket, (struct sockaddr*)&my_name, sizeof(my_name)) == -1) {
-        perror("controlcenter, init_connection: binding datagram socket");
+    try {
+        connection.bind_port(ControlCenter::port);
+    } catch (const std::exception& e) {
+        logError() << e.what();
+        exit(1);
     }
 }
 
@@ -40,7 +31,7 @@ void ControlCenter::read_sensors() {
     // dummy, read from conf here
     // or wait for config requests
     // currently not used - implemented waiting for sensor request to register them
-    _sensors.push_back(new AddressInfo(4049, const_cast<char*>(Connection::LOCALHOST)));
+    _sensors.push_back(new AddressInfo(4049, const_cast<char*>(UdpConnection::LOCALHOST)));
 }
 
 void ControlCenter::create_sensor_config_block(
@@ -48,7 +39,7 @@ void ControlCenter::create_sensor_config_block(
         in_port_t port_id,
         std::string cnt_ip) {
     CntSensorConfigBlock block(central_ips, port_id, cnt_ip);
-    block.serialize(_serializer);
+    block.serialize(serializer);
 }
 
 std::vector<std::string> ControlCenter::get_central_ips() { // another dummy method, this should be hardcoded or read from config
@@ -58,13 +49,13 @@ std::vector<std::string> ControlCenter::get_central_ips() { // another dummy met
 }
 
 void ControlCenter::send_config_sensor_msg(const in_port_t port, const char* addr) {
-    _serializer.clear();
+    serializer.clear();
     std::vector<std::string> central_ips = get_central_ips();
     uint16_t size;
     // will have to actually change the CC port in advance for the update to make any sense
-    create_sensor_config_block(central_ips, ControlCenter::port, Connection::LOCALHOST);
-    uint8_t* buff = _serializer.get_buffer(size);
-    connection->send_data(buff, size, port, addr); 
+    create_sensor_config_block(central_ips, ControlCenter::port, UdpConnection::LOCALHOST);
+    uint8_t* buff = serializer.get_buffer(size);
+    connection.send_data(buff, size, port, addr);
 }
 
 void ControlCenter::recv_sensor_request_msg() {
@@ -73,7 +64,7 @@ void ControlCenter::recv_sensor_request_msg() {
     socklen_t addrlen;
 
     addrlen = sizeof(cli_name);
-    if (recvfrom(connection->_socket, buf, 512, 0, (struct sockaddr*)&cli_name, &addrlen) == -1) {
+    if (recvfrom(connection.socket_fd, buf, 512, 0, (struct sockaddr*)&cli_name, &addrlen) == -1) {
         perror("receiving datagram packet");
     }
 
@@ -102,7 +93,7 @@ void ControlCenter::recv_test_sensor_msg() {
     socklen_t addrlen;
 
     addrlen = sizeof(cli_name);
-    if (recvfrom(connection->_socket, buf, 512, 0, (struct sockaddr*)&cli_name, &addrlen) == -1) {
+    if (recvfrom(connection.socket_fd, buf, 512, 0, (struct sockaddr*)&cli_name, &addrlen) == -1) {
         perror("receiving datagram packet");
     }
 
@@ -116,7 +107,7 @@ void ControlCenter::recv_test_sensor_msg() {
 }
 
 void ControlCenter::close_connection() {
-    connection->close_socket();
+    connection.close_socket();
 }
 
 void ControlCenter::update_sensor_list(AddressInfo info) {
