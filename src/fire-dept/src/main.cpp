@@ -1,7 +1,6 @@
 #include <UdpConnection.h>
 #include <Deserializer.h>
 #include <blocks/AbstractBlock.h>
-#include <blocks/DebugBlock.h>
 #include <blocks/BlockReader.h>
 #include "Logger.h"
 
@@ -22,7 +21,7 @@ int main() {
 
     UdpConnection server;
     try {
-        server.bind(1234);
+        server.bind_port(1234);
     } catch (const std::runtime_error& e) {
         logError() << e.what();
         exit(1);

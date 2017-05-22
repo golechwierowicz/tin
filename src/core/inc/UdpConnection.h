@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <sstream>
 #include <cstring>
+#include <netinet/in.h>
 
 class UdpConnection {
 private:
@@ -13,17 +14,17 @@ public:
     UdpConnection();
     ~UdpConnection();
 
-    void bind(uint16_t port);
+    void bind_port(uint16_t port);
 
     void send(uint8_t* buffer, size_t buffer_size, const std::string& addr, in_port_t port);
     void receive(uint8_t* buffer, size_t buffer_size, size_t& data_length);
 
-    void throwErrno(const char* message) {
+    void raiseError(const char *message, const char *error = strerror(errno)) {
         std::stringstream ss;
         ss << "UdpConnection: "
            << message
            << " ("
-           << strerror(errno)
+           << error
            << ")";
         throw std::runtime_error(ss.str());
     }
