@@ -10,7 +10,6 @@
 #include <arpa/inet.h>
 
 #include "Serializer.h"
-#include "Connection.h"
 #include "AddressInfo.h"
 #include <vector>
 #include <UdpConnection.h>

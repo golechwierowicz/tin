@@ -11,7 +11,6 @@ if (NOT TARGET core) # run once
             inc/Logger.h
             src/Serializer.cpp inc/Serializer.h
             src/Deserializer.cpp inc/Deserializer.h
-            src/Connection.cpp inc/Connection.h
             src/UdpConnection.cpp inc/UdpConnection.h
             src/blocks/BlockReader.cpp inc/blocks/BlockReader.h
             inc/blocks/AbstractBlock.h

@@ -1,7 +1,6 @@
 #include <Sensor.h>
 #include <iostream>
 #include <Deserializer.h>
-#include <Connection.h>
 #include <CommonBlock.h>
 #include <blocks/BlockReader.h>
 #include <blocks/CntSensorConfigBlock.h>
@@ -29,7 +28,7 @@ Sensor::~Sensor() {
 }
 // to be changed, needs to read conf from file/info sent by CC/any kind of init conf
 SensorConfig* Sensor::init_config() {
-    return new SensorConfig(5, 5, 5, DEFAULT_CC_PORT, Connection::LOCALHOST);
+    return new SensorConfig(5, 5, 5, DEFAULT_CC_PORT, UdpConnection::LOCALHOST);
 }
 
 void Sensor::create_request_block() {

@@ -13,8 +13,6 @@
 #include <string>
 #include <arpa/inet.h>
 
-#include "../../core/inc/Serializer.h"
-#include "../../core/inc/Connection.h"
 #include "SensorConfig.h"
 #include <vector>
 #include <UdpConnection.h>
