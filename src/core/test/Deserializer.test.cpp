@@ -20,6 +20,7 @@ BOOST_AUTO_TEST_CASE(values_should_be_correctly_deserialized) {
     int64_t int64_value;
     std::string string_value;
 
+    deserializer.next_block();
     deserializer
             .read(int8_value)
             .read(int16_value)
@@ -55,6 +56,7 @@ BOOST_AUTO_TEST_CASE(multiple_blocks_handled_correctly) {
     int32_t value_4;
     int32_t value_5;
 
+    deserializer.next_block();
     deserializer
             .read(value_1)
             .read(value_2);
@@ -79,6 +81,7 @@ BOOST_AUTO_TEST_CASE(insufficient_block_size_should_cause_exception) {
             0, 0, 0, 1,
     };
     Deserializer deserializer(buffer, sizeof(buffer));
+    deserializer.next_block();
 
     int32_t value;
 
@@ -99,6 +102,7 @@ BOOST_AUTO_TEST_CASE(exceeding_block_size_should_cause_exception) {
     int32_t value_1;
     int32_t value_2;
 
+    deserializer.next_block();
     deserializer.read(value_1);
 
     BOOST_CHECK_THROW(
@@ -118,6 +122,7 @@ BOOST_AUTO_TEST_CASE(next_block_should_return_false_after_last_block) {
     };
     Deserializer deserializer(buffer, sizeof(buffer));
 
+    BOOST_CHECK_EQUAL(deserializer.next_block(), true);
     BOOST_CHECK_EQUAL(deserializer.next_block(), true);
     BOOST_CHECK_EQUAL(deserializer.next_block(), true);
     BOOST_CHECK_EQUAL(deserializer.next_block(), false);

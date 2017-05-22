@@ -18,7 +18,9 @@ private:
 public:
     Deserializer(uint8_t* buffer, uint32_t buffer_size)
             : buffer(buffer), buffer_size(buffer_size) {
-        next_block();
+        if(buffer_size < 8) {
+            throw std::runtime_error("Buffer to small to contain a block");
+        }
     }
 
     bool next_block();

@@ -1,17 +1,16 @@
 #include <Sensor.h>
 #include <iostream>
 #include <Deserializer.h>
-#include <Connection.h>
 #include <CommonBlock.h>
+#include <blocks/BlockReader.h>
+#include <blocks/CntSensorConfigBlock.h>
+#include <Logger.h>
 
-Sensor::Sensor(Serializer serializer) {
+Sensor::Sensor(Serializer serializer) : serializer(serializer) {
     // dummy method, will need to implement reading conf form file
     config = init_config();
-    this->serializer = serializer;
-    con_send = new Connection();
-    con_recv = new Connection();
-    con_send->create_socket();
-    con_recv->create_socket();
+    con_send.open_socket();
+    con_recv.open_socket();
     // will need to change the address when multiple sensor come online, port can stay
     addrInfo = new AddressInfo(4049, LOCALHOST);
     // there is a probem with con_recv - program says 'invalid argument'
@@ -19,27 +18,17 @@ Sensor::Sensor(Serializer serializer) {
 }
 
 void Sensor::init_recv_connection() {
-    struct sockaddr_in my_name;
-
-    my_name.sin_family = AF_INET;
-    inet_pton(AF_INET, Connection::LOCALHOST, &my_name.sin_addr);
-    my_name.sin_port = htons(addrInfo->getPort());
-
-    if (bind(con_recv->_socket, (struct sockaddr*)&my_name, sizeof(my_name)) == -1) {
-        perror("init_recv_connection: binding datagram socket");
-    }
+    con_recv.bind_port(addrInfo->getPort());
 }
 
 Sensor::~Sensor() {
-    con_recv->close_socket();
-    con_send->close_socket();
-    delete con_send;
-    delete con_recv;
+    con_recv.close_socket();
+    con_send.close_socket();
     delete addrInfo;
 }
 // to be changed, needs to read conf from file/info sent by CC/any kind of init conf
 SensorConfig* Sensor::init_config() {
-    return new SensorConfig(5, 5, 5, DEFAULT_CC_PORT, Connection::LOCALHOST);
+    return new SensorConfig(5, 5, 5, DEFAULT_CC_PORT, UdpConnection::LOCALHOST);
 }
 
 void Sensor::create_request_block() {
@@ -59,7 +48,9 @@ void Sensor::send_test_msg() {
 
     uint16_t size;
     uint8_t* buffer = serializer.get_buffer(size);
-    con_send->send_data(buffer, size, config->getCc_port(), config->getCC_Addr());
+
+    auto addr = UdpConnection::getAddress(config->getCC_Addr(), config->getCc_port());
+    con_send.send_msg(buffer, size, addr);
 }
 
 void Sensor::send_request_msg() {
@@ -68,7 +59,9 @@ void Sensor::send_request_msg() {
     create_request_block();
     uint16_t size;
     uint8_t* buffer = serializer.get_buffer(size);
-    con_send->send_data(buffer, size, config->getCc_port(), config->getCC_Addr());
+
+    auto addr = UdpConnection::getAddress(config->getCC_Addr(), config->getCc_port());
+    con_send.send_msg(buffer, size, addr);
 }
 
 void Sensor::receive_cc_config_msg() {
@@ -78,36 +71,29 @@ void Sensor::receive_cc_config_msg() {
 
     addrlen = sizeof(cli_name);
 
-    if (recvfrom(con_recv->_socket, buf, Serializer::BUFFER_SIZE, 0, (struct sockaddr*)&cli_name, &addrlen) == -1) {
+    ssize_t bytes = recvfrom(con_recv.socket_fd, buf, Serializer::BUFFER_SIZE, 0, (struct sockaddr*)&cli_name, &addrlen);
+    if (bytes < 0) {
         perror("receiving datagram packet");
     }
 
-    int size = sizeof(buf);
-    Deserializer d(buf, size);
-    int block_type = d.get_block_type();
-    std::cout << "Got block type: " << block_type << std::endl;
-    assert(block_type == CNT_SENSOR_CONFIG);
+    logDebug() << "Received buffer size " << bytes;
 
-    in_port_t new_cc_port;
-    int neighborhood_station_count = 0;
-    std::string cc_ip;
-    d.read(new_cc_port);
-    d.read(cc_ip);
-    d.read(neighborhood_station_count);
-    central_ips.clear();
-    for(uint16_t i = 0; i < neighborhood_station_count; i++) {
-        std::string cnt_ip;
-        d.read(cnt_ip);
-        central_ips.push_back(cnt_ip);
+    BlockReader reader(buf, bytes);
+
+    for(AbstractBlock* block : reader.blocks) {
+        if(block->type == bt_cnt_sensor_config) {
+            auto configBlock = (CntSensorConfigBlock*) block;
+
+            reload_config(configBlock->port_id);
+
+            central_ips.clear();
+            for(auto& cnt_ip : configBlock->central_ips) {
+                central_ips.push_back(cnt_ip);
+            }
+
+            log() << "Message: " << configBlock->toString();
+        }
     }
-    reload_config(new_cc_port);
-
-    std::cout << "Successfully updated sensor with the following values: " << std::endl;
-    std::cout << "CC Port: " << new_cc_port << std::endl;
-    std::cout << "Central IPs: " << std::endl;
-    for(auto ip: central_ips)
-        std::cout << ip << std::endl;
-    std::cout << "Control center IP: " << cc_ip << std::endl << std::endl;
 }
 
 
@@ -116,6 +102,6 @@ void Sensor::reload_config(in_port_t port) {
 }
 
 void Sensor::close_connection() {
-    con_send->close_socket();
-    con_recv->close_socket();
+    con_send.close_socket();
+    con_recv.close_socket();
 }
