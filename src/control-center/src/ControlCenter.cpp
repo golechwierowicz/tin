@@ -79,6 +79,7 @@ void ControlCenter::recv_sensor_request_msg() {
 
     int size = sizeof(buf);
     Deserializer*d = new Deserializer(buf, size);
+    d->next_block();
     int block_type = d->get_block_type();
     std::cout << "Got block type: " << block_type << std::endl;
     assert(block_type == REQUEST_CONFIG);
@@ -106,6 +107,7 @@ void ControlCenter::recv_test_sensor_msg() {
     }
 
     Deserializer d(buf, sizeof(buf));
+    d.next_block();
     std::string string_value_1;
     std::string string_value_2;
     d.read(string_value_1);
