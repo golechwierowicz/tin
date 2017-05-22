@@ -10,16 +10,16 @@
 #include <arpa/inet.h>
 
 #include "Serializer.h"
-#include "Connection.h"
 #include "AddressInfo.h"
 #include <vector>
+#include <UdpConnection.h>
 
 class ControlCenter {
 private:
     const static in_port_t port = 4040;
-    Connection* connection;
-    Connection* con_send;
-    Serializer _serializer;
+    UdpConnection connection;
+    UdpConnection con_send;
+    Serializer serializer;
     std::vector<AddressInfo*> _sensors;
 public:
     ControlCenter(Serializer serializer);

@@ -13,16 +13,15 @@
 #include <string>
 #include <arpa/inet.h>
 
-#include "../../core/inc/Serializer.h"
-#include "../../core/inc/Connection.h"
 #include "SensorConfig.h"
 #include <vector>
+#include <UdpConnection.h>
 
 class Sensor {
 private:
     Serializer serializer;
-    Connection* con_send;
-    Connection* con_recv;
+    UdpConnection con_send;
+    UdpConnection con_recv;
     SensorConfig* config;
     AddressInfo* addrInfo;
     std::vector<std::string> central_ips;
