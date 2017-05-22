@@ -4,7 +4,7 @@
 #include <Serializer.h>
 #include <Deserializer.h>
 
-enum BlockType { bt_debug = 0 };
+enum BlockType { bt_debug = 0, bt_cnt_sensor_config = 7 };
 
 class AbstractBlock {
 public:

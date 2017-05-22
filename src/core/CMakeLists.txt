@@ -15,7 +15,8 @@ if (NOT TARGET core) # run once
             src/UdpServer.cpp inc/UdpServer.h
             src/blocks/BlockReader.cpp inc/blocks/BlockReader.h
             inc/blocks/AbstractBlock.h
-            src/blocks/DebugBlock.cpp inc/blocks/DebugBlock.h)
+            src/blocks/DebugBlock.cpp inc/blocks/DebugBlock.h
+            src/blocks/CntSensorConfigBlock.cpp inc/blocks/CntSensorConfigBlock.h)
     add_library(core STATIC ${SOURCE_FILES})
 
     # testing

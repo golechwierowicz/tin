@@ -4,6 +4,7 @@
 #include <Connection.h>
 #include <CommonBlock.h>
 #include <iostream>
+#include <blocks/CntSensorConfigBlock.h>
 #include "AddressInfo.h"
 
 ControlCenter::ControlCenter(Serializer serializer) {
@@ -42,19 +43,12 @@ void ControlCenter::read_sensors() {
     _sensors.push_back(new AddressInfo(4049, const_cast<char*>(Connection::LOCALHOST)));
 }
 
-void ControlCenter::create_sensor_config_block(std::vector<std::string> central_ips,
+void ControlCenter::create_sensor_config_block(
+        std::vector<std::string> central_ips,
         in_port_t port_id,
         std::string cnt_ip) {
-
-    _serializer.begin_block(CNT_SENSOR_CONFIG);
-    _serializer.write(port_id)
-        .write(cnt_ip);
-    int cps_size = central_ips.size();
-    _serializer.write(cps_size);
-    for(auto central_ip : central_ips) {
-        _serializer.write(central_ip);
-    }
-    _serializer.end_block();
+    CntSensorConfigBlock block(central_ips, port_id, cnt_ip);
+    block.serialize(_serializer);
 }
 
 std::vector<std::string> ControlCenter::get_central_ips() { // another dummy method, this should be hardcoded or read from config
