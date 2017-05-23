@@ -8,21 +8,21 @@ function buffer_offset(buffer, offset)
 end
 
 function read_string(buffer, maxlen, tree)
-    if maxlen < 4 then return nil, 4 end
-    local len = buffer(0, 4):int()
-    if maxlen < 4 + len then return nil, 4 + len end
-    local subtree = tree:add(buffer(0, 4 + len), "String")
-    subtree:add(buffer(0, 4), "Length: ", len)
-    subtree:add(buffer(4, len), "Data: ", buffer(4, len):string())
-    return subtree, 4 + len
+    if maxlen < 1 then return nil, 4 end
+    local len = buffer(0, 1):int()
+    if maxlen < 1 + len then return nil, 1 + len end
+    local subtree = tree:add(buffer(0, 1 + len), "String")
+    subtree:add(buffer(0, 1), "Length: ", len)
+    subtree:add(buffer(1, len), "Data: ", buffer(1, len):string())
+    return subtree, 1 + len
 end
 
 function read_array(buffer, maxlen, tree, element_reader)
-    if maxlen < 4 then return 0 end
+    if maxlen < 8 then return 0 end
 
-    local len = buffer(0, 4):int()
-    buffer = buffer_offset(buffer, 4)
-    local total_read = 4
+    local len = buffer(0, 8):int64()
+    buffer = buffer_offset(buffer, 8)
+    local total_read = 8
 
     local subtree = tree:add(buffer(0, total_read), "Array")
 
@@ -72,7 +72,7 @@ local BLOCK_PARSERS = {
         tree:add(timestamp, "Timestamp: " .. timestamp:int64())
         tree:add(lat, "Latitude: " .. lat:int())
         tree:add(long, "Longitude: " .. long:int())
-        tree:add(is_alive, "IsAlive: " .. (is_alive:int() ~= 0))
+        tree:add(is_alive, "IsAlive: " .. (is_alive:int() ~= 0 and "true" or "false"))
 
         return 13
     end,
@@ -82,7 +82,7 @@ local BLOCK_PARSERS = {
         end
 
         local smoke_exists = buffer(0, 1)
-        tree:add(smoke_exists, "SmokeExists: " .. (smoke_exists:int() ~= 0))
+        tree:add(smoke_exists, "SmokeExists: " .. (smoke_exists:int() ~= 0 and "true" or "false"))
 
         return 1
     end,
@@ -139,6 +139,20 @@ local BLOCK_PARSERS = {
         return 4
     end,
     [BLOCK_TYPES.CNT_SENSOR_CONFIG] = function(buffer, maxlen, tree)
+        local port_id = buffer(0, 2)
+        tree:add(port_id, "PortId: " .. port_id:int())
+        buffer = buffer_offset(buffer, 2)
+        maxlen = maxlen - 2
+
+        local cnt_ip_subtree = tree:add(buffer(0, 1), "CentralId")
+        local cnt_ip, cnt_ip_size = read_string(buffer, maxlen, cnt_ip_subtree)
+        if cnt_ip == nil then
+            return nil, cnt_ip_size
+        end
+        cnt_ip_subtree:set_len(cnt_ip_size)
+        buffer = buffer_offset(buffer, cnt_ip_size)
+        maxlen = maxlen - cnt_ip_size
+
         local ips_subtree = tree:add(buffer(0, 1), "CentralsIps")
         local ips, ips_size = read_array(buffer, maxlen, ips_subtree, read_string)
         ips_subtree:set_len(ips_size)
@@ -147,20 +161,7 @@ local BLOCK_PARSERS = {
             return nil, ips_size
         end
 
-        local sensor_id = buffer(ips_size, 8)
-        tree:add(sensor_id, "SensorId: " .. sensor_id:int64())
-
-        local cnt_ip_subtree = tree:add(buffer(ips_size + 8, 1))
-        local cnt_ip, cnt_ip_size = read_string(buffer_offset(buffer, ips_size + 8),
-            maxlen - ips_size - 8,
-            cnt_ip_subtree)
-        cnt_ip_subtree:set_len(cnt_ip_size)
-
-        if cnt_ip == nil then
-            return nil, ips_size + 8 + cnt_ip_size
-        end
-
-        return ips_size + 8 + cnt_ip_size
+        return ips_size + 2 + cnt_ip_size
     end,
     [BLOCK_TYPES.CNT_SENSOR_REQUEST_CONFIG] = function(buffer, maxlen, tree)
         return 0
@@ -170,26 +171,28 @@ local BLOCK_PARSERS = {
 function czujnix_proto.dissector(buffer, pinfo, tree)
     pinfo.cols.protocol = "CZUJNIX"
 
-    local subtree = tree:add(trivial_proto, buffer(), "CzuniX Protocol Data")
+    local subtree = tree:add(czujnix_proto, buffer(), "CzuniX Protocol Data")
 
     local total_len = buffer:len()
     local bytes_consumed = 0
 
     while bytes_consumed < total_len do
-        local block_type = buffer(0, 4):int()
-        if BLOCK_NAMES[block_type] == nil then
+        local block_type = buffer(0, 4)
+        if BLOCK_NAMES[block_type:int()] == nil then
             return 0
         end
+        local block_size = buffer(4, 4)
 
-        local block_tree = subtree:add(buffer(0, 4), BLOCK_NAMES[block_type])
+        local block_tree = subtree:add(buffer(0, 8), BLOCK_NAMES[block_type:int()])
+        block_tree:add(block_size, "BlockSize: " .. block_size:int())
 
-        bytes_consumed = bytes_consumed + 4
-        buffer = buffer_offset(buffer, 4)
-        local read, required = BLOCK_PARSERS[block_type](buffer, total_len - bytes_consumed, block_tree)
+        bytes_consumed = bytes_consumed + 8
+        buffer = buffer_offset(buffer, 8)
+        local read, required = BLOCK_PARSERS[block_type:int()](buffer, total_len - bytes_consumed, block_tree)
 
         if read == nil then
-            pktinfo.desegment_offset = bytes_consumed
-            pktinfo.desegment_len = required
+            pinfo.desegment_offset = bytes_consumed
+            pinfo.desegment_len = required
             return
         else
             bytes_consumed = bytes_consumed + read
@@ -201,7 +204,7 @@ function czujnix_proto.dissector(buffer, pinfo, tree)
     return bytes_consumed
 end
 
-local tcp_table = DissectorTable.get("tcp.port")
+local tcp_table = DissectorTable.get("udp.port")
 for _, v in ipairs({ ... }) do
-    tcp_table:add(v, ring_proto)
+    tcp_table:add(v, czujnix_proto)
 end
