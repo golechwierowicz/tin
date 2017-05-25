@@ -26,9 +26,9 @@ struct sockaddr_4or6 {
 class UdpConnection {
 private:
     bool open = false;
-public:
-    /* TEMPORARILY PUBLIC! Remove all usages */
     int socket_fd;
+    
+public:
     static std::string LOCALHOST;
 
     ~UdpConnection();
