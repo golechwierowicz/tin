@@ -7,6 +7,8 @@
 #include "UdpConnection.h"
 #include "Logger.h"
 
+std::string UdpConnection::LOCALHOST("127.0.0.1");
+
 std::string sockaddr_4or6::toString() {
     char* addr[200];
     if(ipv4) {

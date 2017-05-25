@@ -7,10 +7,19 @@
 
 
 #include "AbstractBlock.h"
+#include <sstream>
+#include <netinet/in.h>
 
 class RequestConfigBlock : public AbstractBlock {
+private:
+    in_port_t port;
 public:
-    RequestConfigBlock() : AbstractBlock(bt_request_config) {}
+    in_port_t getPort() const;
+
+    void setPort(in_port_t port);
+
+public:
+    RequestConfigBlock(in_port_t port = 0) : AbstractBlock(bt_request_config), port(port) {}
 
     void serialize(Serializer& serializer);
     void deserialize(Deserializer& deserializer);

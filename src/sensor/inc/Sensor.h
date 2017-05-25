@@ -33,9 +33,8 @@ public:
     ~Sensor();
 
     // communication cc - sensor
-    void send_test_msg();
     void send_request_msg();
-    void receive_cc_config_msg();
+    void receive_cc_config_msg(uint8_t *buf, size_t bufSize);
     void close_connection();
 
     SensorConfig* init_config(); // consider using smart ptr.........

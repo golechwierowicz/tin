@@ -14,6 +14,13 @@ struct sockaddr_4or6 {
     struct sockaddr_in6 addr6;
 
     std::string toString();
+    void setPort(in_port_t port) {
+        addr4.sin_port = htons(port);
+        addr6.sin6_port = htons(port);
+    }
+//    bool operator==(const sockaddr_4or6& o) {
+//        return addr6.sin6_port == o.addr6.sin6_port && addr6.sin6_addr ? true : false;
+//    }
 };
 
 class UdpConnection {
@@ -22,8 +29,7 @@ private:
 public:
     /* TEMPORARILY PUBLIC! Remove all usages */
     int socket_fd;
-
-    static constexpr const char* LOCALHOST = "127.0.0.1";
+    static std::string LOCALHOST;
 
     ~UdpConnection();
 

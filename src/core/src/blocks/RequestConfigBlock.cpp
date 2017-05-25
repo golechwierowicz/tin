@@ -7,13 +7,25 @@
 void RequestConfigBlock::serialize(Serializer &serializer) {
     serializer
         .begin_block(type)
+        .write(port)
         .end_block();
 }
 
 void RequestConfigBlock::deserialize(Deserializer &deserializer) {
-    return;
+    deserializer
+        .read(port);
 }
 
 std::string RequestConfigBlock::toString() {
-    return "RequestConfigBlock []";
+    std::stringstream ss;
+    ss << "RequestConfigBlock [" << port << "]";
+    return ss.str();
+}
+
+in_port_t RequestConfigBlock::getPort() const {
+    return port;
+}
+
+void RequestConfigBlock::setPort(in_port_t port) {
+    RequestConfigBlock::port = port;
 }

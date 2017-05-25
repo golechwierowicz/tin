@@ -14,7 +14,7 @@ BlockReader::BlockReader(uint8_t *message_buffer, size_t message_size) :
                 block->deserialize(deserializer);
                 blocks.push_back((AbstractBlock*)block);
             } break;
-            case bt_cnt_sensor_config: {
+            case bt_request_config: {
                 CntSensorConfigBlock* block = new CntSensorConfigBlock;
                 block->deserialize(deserializer);
                 blocks.push_back((AbstractBlock*)block);
