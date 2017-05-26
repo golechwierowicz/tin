@@ -1,5 +1,4 @@
 #include <Sensor.h>
-#include <iostream>
 #include <Deserializer.h>
 #include <blocks/BlockReader.h>
 #include <blocks/CntSensorConfigBlock.h>
@@ -29,12 +28,7 @@ Sensor::~Sensor() {
 SensorConfig* Sensor::init_config() {
     // to be changed, needs to read conf from file/info sent by CC/any kind of init conf
     // dummy method, will need to implement reading conf form file
-
-    // jak sie tu uzyje normalnego stringa zdefiniowanego jako static w udpconnection to wywala blad
-    // w funkcji inet_pton "UdpConnection: inet_pton() failed (Success)"
-    // wiec uzywam tego extern char* localhost
-    // return new SensorConfig(5, 5, 5, DEFAULT_CC_PORT, UdpConnection::LOCALHOST);
-    return new SensorConfig(5, 5, 5, 4040, UdpConnection::LOCALHOST);
+    return new SensorConfig(st_temp_sensor, 4040, UdpConnection::LOCALHOST);
 }
 
 void Sensor::send_request_msg() {
@@ -47,7 +41,7 @@ void Sensor::send_request_msg() {
 
     try {
         log() << "Sending: " << configBlock.toString();
-        auto addr = UdpConnection::getAddress(config->cc_addr, config->cc_port);
+        auto addr = UdpConnection::getAddress(config->getCc_addr(), config->getCc_port());
         con_send.send_msg(buffer, size, addr);
     } catch(const std::runtime_error& e) {
         logError() << e.what();
@@ -86,7 +80,7 @@ void Sensor::receive_cc_config_msg(uint8_t *buf, size_t bufSize) {
 
 
 void Sensor::reload_config(in_port_t port) {
-    config->cc_port = port;
+    config->setCc_port(port);
 }
 
 void Sensor::close_connection() {

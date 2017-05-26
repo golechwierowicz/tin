@@ -10,10 +10,9 @@
 #include <SensorConfig.h>
 #include <string>
 #include <arpa/inet.h>
-
-#include "SensorConfig.h"
 #include <vector>
 #include <UdpConnection.h>
+#include "SensorConfig.h"
 
 class Sensor {
 private:

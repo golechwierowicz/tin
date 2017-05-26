@@ -2,6 +2,7 @@
 #include <Logger.h>
 #include <blocks/CntSensorConfigBlock.h>
 #include <blocks/RequestConfigBlock.h>
+#include <blocks/SensorMeasurementBlock.h>
 #include "blocks/BlockReader.h"
 
 BlockReader::BlockReader(uint8_t *message_buffer, size_t message_size) :
@@ -12,6 +13,15 @@ BlockReader::BlockReader(uint8_t *message_buffer, size_t message_size) :
         switch (deserializer.get_block_type()) {
             case bt_debug: {
                 DebugBlock* block = new DebugBlock;
+                block->deserialize(deserializer);
+                blocks.push_back((AbstractBlock*)block);
+            } break;
+            case bt_smoke_read:
+            case bt_ir_read:
+            case bt_temp_read: {
+                SensorMeasurementBlock* block = new SensorMeasurementBlock(
+                        static_cast<BlockType>(deserializer.get_block_type())
+                );
                 block->deserialize(deserializer);
                 blocks.push_back((AbstractBlock*)block);
             } break;

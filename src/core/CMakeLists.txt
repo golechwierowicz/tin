@@ -16,7 +16,7 @@ if (NOT TARGET core) # run once
             src/blocks/BlockReader.cpp inc/blocks/BlockReader.h
             inc/blocks/AbstractBlock.h
             src/blocks/DebugBlock.cpp inc/blocks/DebugBlock.h
-            src/blocks/CntSensorConfigBlock.cpp inc/blocks/CntSensorConfigBlock.h src/blocks/RequestConfigBlock.cpp inc/blocks/RequestConfigBlock.h src/blocks/PingBlock.cpp inc/blocks/PingBlock.h)
+            src/blocks/CntSensorConfigBlock.cpp inc/blocks/CntSensorConfigBlock.h src/blocks/RequestConfigBlock.cpp inc/blocks/RequestConfigBlock.h src/blocks/PingBlock.cpp inc/blocks/PingBlock.h src/blocks/SensorMeasurementBlock.cpp inc/blocks/SensorMeasurementBlock.h)
     add_library(core STATIC ${SOURCE_FILES})
 
     # testing

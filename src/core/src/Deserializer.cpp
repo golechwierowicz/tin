@@ -70,6 +70,10 @@ Deserializer& Deserializer::read(uint64_t& value) {
     return *this;
 }
 
+Deserializer &Deserializer::read(double value) {
+    return read(static_cast<uint64_t>(value));
+}
+
 Deserializer& Deserializer::read(std::string& value) {
     uint8_t size;
     read(size);
@@ -78,3 +82,4 @@ Deserializer& Deserializer::read(std::string& value) {
     value = std::string(buffer, size);
     return *this;
 }
+

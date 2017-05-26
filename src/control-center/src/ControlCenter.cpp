@@ -65,15 +65,10 @@ void ControlCenter::close_connection() {
     con_send.close_socket();
 }
 
-// TODO - need to figure out how to compare ip v6 addresses
-//void ControlCenter::update_sensor_list(sockaddr_4or6 info) {
-//    bool contains = false;
-//    for (auto& sensor : sensors) {
-//        if (sensor == infostring(sensor->getIp()) == std::string(info.getIp())) {
-//            break;
-//        }
-//    }
-//    if (contains == false) {
-//        sensors.push_back(new AddressInfo(info.getPort(), const_cast<char*>(info.getIp())));
-//    }
-//}
+void ControlCenter::update_sensor_list(uint32_t sensor_id, sockaddr_storage addr) {
+    auto sensors_iterator = sensors.find(sensor_id);
+    if (sensors_iterator == sensors.end()) {
+        sensors.insert(std::pair<uint32_t, sockaddr_storage>(sensor_id, addr));
+        log() << "Control Center has registered a new sensor";
+    }
+}

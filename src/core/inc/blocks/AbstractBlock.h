@@ -4,7 +4,15 @@
 #include <Serializer.h>
 #include <Deserializer.h>
 
-enum BlockType { bt_debug = 0, bt_cnt_sensor_config = 7, bt_request_config = 8, bt_ping = 9 };
+enum BlockType {
+    bt_debug = 0,
+    bt_smoke_read = 2,
+    bt_ir_read = 3,
+    bt_temp_read = 4,
+    bt_cnt_sensor_config = 7,
+    bt_request_config = 8,
+    bt_ping = 9
+};
 
 class AbstractBlock {
 public:
