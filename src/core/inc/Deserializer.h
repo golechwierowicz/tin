@@ -34,6 +34,7 @@ public:
     Deserializer& read(uint16_t& value);
     Deserializer& read(uint32_t& value);
     Deserializer& read(uint64_t& value);
+    Deserializer& read(double value);
     Deserializer& read(std::string& value);
 };
 

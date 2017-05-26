@@ -30,6 +30,7 @@ public:
     Serializer& write(uint16_t value);
     Serializer& write(uint32_t value);
     Serializer& write(uint64_t value);
+    Serializer& write(double value);
     Serializer& write(const std::string& s);
 
     uint8_t* get_buffer(uint16_t& size) {

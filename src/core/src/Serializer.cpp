@@ -66,6 +66,11 @@ Serializer& Serializer::write(uint64_t value) {
     return write(&to_be_written, sizeof(to_be_written));
 }
 
+Serializer &Serializer::write(double value) {
+    return write(static_cast<uint64_t>(value));
+}
+
+
 Serializer& Serializer::write(const std::string& s) {
     if (s.size() > 0xFF) {
         throw std::runtime_error("Only strings of size smaller than 256 are allowed");
@@ -82,3 +87,4 @@ void Serializer::clear() {
     bool in_block = false;
     std::fill_n(buffer, BUFFER_SIZE, 0);
 }
+

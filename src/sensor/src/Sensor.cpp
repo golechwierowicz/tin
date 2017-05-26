@@ -101,3 +101,7 @@ void Sensor::close_connection() {
     con_send.close_socket();
     con_recv.close_socket();
 }
+
+uint32_t Sensor::getId() const {
+    return id;
+}

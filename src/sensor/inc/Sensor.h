@@ -19,6 +19,7 @@
 
 class Sensor {
 private:
+    uint32_t id;
     Serializer serializer;
     UdpConnection con_send;
     UdpConnection con_recv;
@@ -31,6 +32,7 @@ private:
 public:
     Sensor(Serializer serializer);
     ~Sensor();
+    uint32_t getId() const;
 
     // communication cc - sensor
     void send_request_msg();
