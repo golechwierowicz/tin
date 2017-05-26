@@ -37,7 +37,8 @@ void ControlCenter::recv_sensor_request_msg() {
         for (AbstractBlock* block : reader.blocks) {
             if (block->type == bt_request_config) {
                 auto requestConfigBlock = (RequestConfigBlock*) block;
-                UdpConnection::setAddrPort(&addr, requestConfigBlock->getPort());
+                UdpConnection::setAddrPort(addr, requestConfigBlock->getPort());
+                log() << UdpConnection::addressStr(addr);
 
                 log() << "Received: " << requestConfigBlock->toString();
 

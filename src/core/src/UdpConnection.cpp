@@ -48,7 +48,6 @@ UdpConnection::~UdpConnection() {
 
 void UdpConnection::send_msg(uint8_t *buffer, size_t len, sockaddr_storage address) {
     ssize_t result;
-    logDebug() << "UdpConnection: Message sending to: " << addressStr(address);
     if (address.ss_family == AF_INET) {
         result = sendto(socket_fd, buffer, len, 0, (sockaddr*)&address, sizeof(sockaddr_in));
     } else {
@@ -86,27 +85,23 @@ sockaddr_storage UdpConnection::receive(uint8_t* buffer, size_t buffer_size, siz
 }
 
 sockaddr_storage UdpConnection::getAddress(const std::string& addr, in_port_t port) {
-    logDebug() << "Converting: " << addr;
-
     sockaddr_storage address;
     sockaddr_in* addr4 = (sockaddr_in*) &address;
     sockaddr_in6* addr6 = (sockaddr_in6*) &address;
 
     addr4->sin_family = AF_INET;
-    addr4->sin_port = port;
+    addr4->sin_port = htons(port);
     auto p_res = inet_pton(AF_INET, addr.c_str(), &addr4->sin_addr);
 
     if(p_res != 1) {
         addr6->sin6_family = AF_INET6;
-        addr6->sin6_port = port;
+        addr6->sin6_port = htons(port);
         p_res = inet_pton(AF_INET6, addr.c_str(), &addr6->sin6_addr);
 
         if(p_res != 1) {
             raiseError("inet_pton() failed");
         }
     }
-
-    logDebug() << "Conversion result: " << addressStr(address);
 
     return address;
 }
@@ -116,24 +111,31 @@ std::string UdpConnection::addressStr(sockaddr_storage& address) {
     bool ipv4 = address.ss_family == AF_INET;
 
     if(ipv4) {
-        inet_ntop(AF_INET, &address, (char*)addr, sizeof(sockaddr_in));
+        inet_ntop(AF_INET, &((sockaddr_in*) &address)->sin_addr, (char*)addr, sizeof(sockaddr_in));
     } else {
-        inet_ntop(AF_INET6, &address, (char*)addr, sizeof(sockaddr_in6));
+        inet_ntop(AF_INET6, &((sockaddr_in6*) &address)->sin6_addr, (char*)addr, sizeof(sockaddr_in6));
     }
+
+    in_port_t port = ntohs(ipv4 ?
+       ((sockaddr_in*) &address)->sin_port :
+       ((sockaddr_in6*) &address)->sin6_port
+    );
 
     std::stringstream ss;
     ss << "sockaddr_storage ["
        << (ipv4 ? "ipv4" : "ipv6")
-       << ", " << (const char*)addr << "]";
+       << ", " << (const char*)addr
+       << ", " << port
+       << "]";
     return ss.str();
 }
 
-void UdpConnection::setAddrPort(sockaddr_storage* address, in_port_t port) {
-    bool ipv4 = address->ss_family == AF_INET;
+void UdpConnection::setAddrPort(sockaddr_storage& address, in_port_t port) {
+    bool ipv4 = address.ss_family == AF_INET;
 
     if(ipv4) {
-        ((sockaddr_in*)address)->sin_port = port;
+        ((sockaddr_in*) &address)->sin_port = htons(port);
     } else {
-        ((sockaddr_in6*)address)->sin6_port = port;
+        ((sockaddr_in6*) &address)->sin6_port = htons(port);
     }
 }

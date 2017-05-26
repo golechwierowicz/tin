@@ -28,7 +28,7 @@ public:
 
     static sockaddr_storage getAddress(const std::string& addr, in_port_t port);
     static std::string addressStr(sockaddr_storage& address);
-    static void setAddrPort(sockaddr_storage* address, in_port_t port);
+    static void setAddrPort(sockaddr_storage& address, in_port_t port);
 };
 
 
