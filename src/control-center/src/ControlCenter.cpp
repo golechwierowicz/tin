@@ -49,6 +49,8 @@ void ControlCenter::recv_sensor_request_msg() {
                 uint8_t* buf = serializer.get_buffer(bufSize);
                 connection.send_msg(buf, bufSize, addr);
                 //update_sensor_list(addr);
+            } else {
+                log() << "Received: " << block->toString();
             }
         }
     } catch (const std::runtime_error& e) {

@@ -17,7 +17,7 @@ add_bytes(b, 0, 0, 0, 0xFF) # block type (should be unrecognized and skipped)
 add_bytes(b, 0, 0, 0, 8)
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.sendto(b, ('127.0.0.1', 1234))
+sock.sendto(b, ('127.0.0.1', 4040))
 
 b = bytearray()
 
@@ -29,4 +29,4 @@ add_bytes(b, 4) # length of the string
 add_bytes(b, ord('i'), ord('p'), ord('v'), ord('6'))
 
 sock6 = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-sock6.sendto(b, ('::', 1234))
+sock6.sendto(b, ('::', 4040))

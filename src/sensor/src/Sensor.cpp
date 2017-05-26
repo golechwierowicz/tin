@@ -37,21 +37,17 @@ SensorConfig* Sensor::init_config() {
     return new SensorConfig(5, 5, 5, 4040, UdpConnection::LOCALHOST);
 }
 
-void Sensor::create_request_block() {
-    RequestConfigBlock configBlock(port);
-    configBlock.serialize(serializer);
-}
-
 void Sensor::send_request_msg() {
     serializer.clear();
-    create_request_block();
+    RequestConfigBlock configBlock(port);
+    configBlock.serialize(serializer);
+
     uint16_t size;
     uint8_t* buffer = serializer.get_buffer(size);
 
     try {
-        log() << config->cc_addr << " " << config->cc_port;
         auto addr = UdpConnection::getAddress(config->cc_addr, config->cc_port);
-        log() << "Message from: " << UdpConnection::addressStr(addr);
+        log() << "Sending to: " << UdpConnection::addressStr(addr);
         con_send.send_msg(buffer, size, addr);
     } catch(const std::runtime_error& e) {
         logError() << e.what();

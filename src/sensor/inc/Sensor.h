@@ -27,7 +27,6 @@ private:
     std::vector<std::string> central_ips;
 
     void init_recv_connection();
-    void create_request_block();
     void reload_config(in_port_t);
 public:
     Sensor(Serializer serializer);
