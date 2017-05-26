@@ -3,7 +3,6 @@
 #include <netinet/in.h>
 #include <sstream>
 #include <arpa/inet.h>
-#include <netdb.h>
 #include "UdpConnection.h"
 #include "Logger.h"
 
@@ -61,18 +60,6 @@ void UdpConnection::close_socket() {
 
 UdpConnection::~UdpConnection() {
     close_socket();
-}
-
-void UdpConnection::send_data(uint8_t* data, uint16_t size, in_port_t port, std::string addr) {
-    logWarn() << "UdpConnection: Method UdpConnection::send_data() is deprecated. Use UdpConnection::send_msg()";
-
-    struct sockaddr_in srv_addr;
-    srv_addr.sin_family = AF_INET;
-    inet_aton(addr.c_str(), &srv_addr.sin_addr);
-    srv_addr.sin_port = htons(port);
-    if (sendto(socket_fd, data, size, 0, (struct sockaddr*)&srv_addr, sizeof(srv_addr)) == -1) {
-        logError() << "Socket creation failed (" << strerror(errno) << ")";
-    }
 }
 
 sockaddr_4or6 UdpConnection::getAddress(std::string addr, in_port_t port) {

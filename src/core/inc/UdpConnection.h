@@ -38,9 +38,6 @@ public:
 
     void bind_port(uint16_t port);
 
-    /* DEPRECATED */
-    void send_data(uint8_t* data, uint16_t size, in_port_t port, std::string addr);
-
     static sockaddr_4or6 getAddress(std::string addr, in_port_t port);
     void send_msg(uint8_t* buffer, size_t len, sockaddr_4or6& address);
 
