@@ -22,11 +22,11 @@ BOOST_AUTO_TEST_CASE(values_should_be_correctly_deserialized) {
 
     deserializer.next_block();
     deserializer
-            .read(int8_value)
-            .read(int16_value)
-            .read(int32_value)
-            .read(int64_value)
-            .read(string_value);
+            .read<int8_t>(int8_value)
+            .read<int16_t>(int16_value)
+            .read<int32_t>(int32_value)
+            .read<int64_t>(int64_value)
+            .read<std::string>(string_value);
 
     BOOST_CHECK_EQUAL(int8_value, 0x11);
     BOOST_CHECK_EQUAL(int16_value, 0x1122);
@@ -58,13 +58,13 @@ BOOST_AUTO_TEST_CASE(multiple_blocks_handled_correctly) {
 
     deserializer.next_block();
     deserializer
-            .read(value_1)
-            .read(value_2);
+            .read<int32_t>(value_1)
+            .read<int32_t>(value_2);
     deserializer.next_block();
     deserializer
-            .read(value_3)
-            .read(value_4)
-            .read(value_5);
+            .read<int32_t>(value_3)
+            .read<int32_t>(value_4)
+            .read<int32_t>(value_5);
 
     BOOST_CHECK_EQUAL(value_1, 1);
     BOOST_CHECK_EQUAL(value_2, 2);
@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE(insufficient_block_size_should_cause_exception) {
     int32_t value;
 
     BOOST_CHECK_THROW(
-            deserializer.read(value),
+            deserializer.read<int32_t>(value),
             std::exception
     );
 }
@@ -103,10 +103,10 @@ BOOST_AUTO_TEST_CASE(exceeding_block_size_should_cause_exception) {
     int32_t value_2;
 
     deserializer.next_block();
-    deserializer.read(value_1);
+    deserializer.read<int32_t>(value_1);
 
     BOOST_CHECK_THROW(
-            deserializer.read(value_2),
+            deserializer.read<int32_t>(value_2),
             std::exception
     );
 }

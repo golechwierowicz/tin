@@ -80,8 +80,8 @@ void ControlCenter::recv_sensor_request_msg() {
 
     in_port_t sensor_port;
     std::string sensor_ip;
-    d->read(sensor_port);
-    d->read(sensor_ip);
+    d->read<uint16_t>(sensor_port);
+    d->read<std::string>(sensor_ip);
     send_config_sensor_msg(sensor_port, sensor_ip.c_str());
 
     AddressInfo dto(sensor_port, const_cast<char*>(sensor_ip.c_str()));
@@ -103,8 +103,8 @@ void ControlCenter::recv_test_sensor_msg() {
     d.next_block();
     std::string string_value_1;
     std::string string_value_2;
-    d.read(string_value_1);
-    d.read(string_value_2);
+    d.read<std::string>(string_value_1);
+    d.read<std::string>(string_value_2);
     std::cout << string_value_1 << " " << string_value_2;
 }
 

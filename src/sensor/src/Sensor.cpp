@@ -34,16 +34,16 @@ SensorConfig* Sensor::init_config() {
 void Sensor::create_request_block() {
     serializer
             .begin_block(8)
-            .write(addrInfo->getPort())
-            .write(std::string(addrInfo->getIp()))
+            .write<uint16_t>(addrInfo->getPort())
+            .write<const std::string&>(addrInfo->getIp())
             .end_block();
 }
 
 void Sensor::send_test_msg() {
     serializer.clear();
     serializer.begin_block(1)
-            .write(std::string("serialized string"))
-            .write(std::string("\nsent from sensor\n"))
+            .write<const std::string&>("serialized string")
+            .write<const std::string&>("\nsent from sensor\n")
             .end_block();
 
     uint16_t size;

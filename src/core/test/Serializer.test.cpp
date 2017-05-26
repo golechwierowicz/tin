@@ -26,11 +26,11 @@ BOOST_AUTO_TEST_CASE(buffer_contents_should_be_correct) {
     uint16_t size;
 
     serializer.begin_block(1)
-            .write((int8_t) 0x11)
-            .write((int16_t) 0x1122)
-            .write((int32_t) 0x11223344)
-            .write((int64_t) 0x1122334455667788)
-            .write(std::string("abcd"))
+            .write<int8_t>(0x11)
+            .write<int16_t>(0x1122)
+            .write<int32_t>(0x11223344)
+            .write<int64_t>(0x1122334455667788)
+            .write<const std::string&>("abcd")
             .end_block();
     uint8_t* buffer = serializer.get_buffer(size);
 
@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE(buffer_overflow_should_throw_exception) {
             {
                 serializer.begin_block(1);
                 while (true) {
-                    serializer.write((uint8_t) 0);
+                    serializer.write<uint8_t>(0);
                 }
             },
             std::exception

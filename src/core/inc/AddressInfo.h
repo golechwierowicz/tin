@@ -9,9 +9,9 @@
 class AddressInfo {
 private:
     in_port_t port;
-    char* ip;
+    const char* ip;
 public:
-    AddressInfo(in_port_t, char*);
+    AddressInfo(in_port_t, const char*);
     const in_port_t getPort() const;
     void setPort(in_port_t port);
     const char* getIp() const;

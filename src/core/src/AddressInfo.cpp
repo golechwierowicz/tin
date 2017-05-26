@@ -4,7 +4,7 @@
 
 #include <AddressInfo.h>
 
-AddressInfo::AddressInfo(in_port_t port, char* ip) : port(port), ip(ip){
+AddressInfo::AddressInfo(in_port_t port, const char* ip) : port(port), ip(ip){
 
 }
 
