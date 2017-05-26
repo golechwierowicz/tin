@@ -1,42 +1,44 @@
 #include <Sensor.h>
 #include <iostream>
 #include <Deserializer.h>
-#include <CommonBlock.h>
 #include <blocks/BlockReader.h>
 #include <blocks/CntSensorConfigBlock.h>
 #include <Logger.h>
 #include <blocks/RequestConfigBlock.h>
 
-Sensor::Sensor(Serializer serializer) : serializer(serializer) {
-    // dummy method, will need to implement reading conf form file
-    config = init_config();
+Sensor::Sensor(Serializer serializer) :
+        serializer(serializer),
+        port(4049), // TO BE CHANGED AND READ FROM CONFIG
+        ip_address(UdpConnection::LOCALHOST),
+        config(init_config()) {
     con_send.open_socket();
     con_recv.open_socket();
-    // will need to change the address when multiple sensor come online, port can stay
-    addrInfo = new AddressInfo(4049, LOCALHOST);
+
     init_recv_connection();
 }
 
 void Sensor::init_recv_connection() {
-    con_recv.bind_port(addrInfo->getPort());
+    con_recv.bind_port(port);
 }
 
 Sensor::~Sensor() {
     con_recv.close_socket();
     con_send.close_socket();
-    delete addrInfo;
 }
-// to be changed, needs to read conf from file/info sent by CC/any kind of init conf
+
 SensorConfig* Sensor::init_config() {
+    // to be changed, needs to read conf from file/info sent by CC/any kind of init conf
+    // dummy method, will need to implement reading conf form file
+
     // jak sie tu uzyje normalnego stringa zdefiniowanego jako static w udpconnection to wywala blad
     // w funkcji inet_pton "UdpConnection: inet_pton() failed (Success)"
     // wiec uzywam tego extern char* localhost
     // return new SensorConfig(5, 5, 5, DEFAULT_CC_PORT, UdpConnection::LOCALHOST);
-    return new SensorConfig(5, 5, 5, DEFAULT_CC_PORT, LOCALHOST);
+    return new SensorConfig(5, 5, 5, 4040, UdpConnection::LOCALHOST);
 }
 
 void Sensor::create_request_block() {
-    RequestConfigBlock configBlock(addrInfo->getPort());
+    RequestConfigBlock configBlock(port);
     configBlock.serialize(serializer);
 }
 
@@ -47,15 +49,9 @@ void Sensor::send_request_msg() {
     uint8_t* buffer = serializer.get_buffer(size);
 
     try {
-        auto addr = UdpConnection::getAddress(config->getCC_Addr(), config->getCc_port());
-        printf("%s %d\n", config->getCC_Addr().c_str(), config->getCc_port());
-        char* tmp[200];
-        if(addr.ipv4) {
-            inet_ntop(AF_INET, &addr.addr4, (char*)tmp, sizeof(addr.addr4));}
-//        } else {
-//            inet_ntop(AF_INET6, &addr6, (char*)addr, sizeof(addr6));
-//        }
-        printf("%s %d\n", tmp, ntohs(addr.addr4.sin_port));
+        log() << config->cc_addr << " " << config->cc_port;
+        auto addr = UdpConnection::getAddress(config->cc_addr, config->cc_port);
+        log() << "Message from: " << UdpConnection::addressStr(addr);
         con_send.send_msg(buffer, size, addr);
     } catch(const std::runtime_error& e) {
         logError() << e.what();
@@ -94,7 +90,7 @@ void Sensor::receive_cc_config_msg(uint8_t *buf, size_t bufSize) {
 
 
 void Sensor::reload_config(in_port_t port) {
-    config->setCc_port(port);
+    config->cc_port = port;
 }
 
 void Sensor::close_connection() {

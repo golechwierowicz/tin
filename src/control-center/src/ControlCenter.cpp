@@ -1,12 +1,10 @@
 #include <ControlCenter.h>
 #include <Deserializer.h>
-#include <CommonBlock.h>
 #include <iostream>
 #include <blocks/CntSensorConfigBlock.h>
 #include <Logger.h>
 #include <blocks/BlockReader.h>
 #include <blocks/RequestConfigBlock.h>
-#include "AddressInfo.h"
 
 ControlCenter::ControlCenter(Serializer serializer) : serializer(serializer) {
     connection.open_socket();
@@ -39,11 +37,14 @@ void ControlCenter::recv_sensor_request_msg() {
         for (AbstractBlock* block : reader.blocks) {
             if (block->type == bt_request_config) {
                 auto requestConfigBlock = (RequestConfigBlock*) block;
+                UdpConnection::setAddrPort(&addr, requestConfigBlock->getPort());
+
                 log() << "Received: " << requestConfigBlock->toString();
-                addr.setPort(requestConfigBlock->getPort());
+
                 serializer.clear();
-                CntSensorConfigBlock block(get_central_ips(), port, ip);
-                block.serialize(serializer);
+                CntSensorConfigBlock sensorConfigBlock(get_central_ips(), port, ip);
+                sensorConfigBlock.serialize(serializer);
+
                 uint16_t bufSize;
                 uint8_t* buf = serializer.get_buffer(bufSize);
                 connection.send_msg(buf, bufSize, addr);

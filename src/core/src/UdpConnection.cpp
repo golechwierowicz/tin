@@ -6,23 +6,7 @@
 #include "UdpConnection.h"
 #include "Logger.h"
 
-std::string UdpConnection::LOCALHOST("127.0.0.1");
-
-std::string sockaddr_4or6::toString() {
-    char* addr[200];
-    if(ipv4) {
-        inet_ntop(AF_INET, &addr4, (char*)addr, sizeof(addr4));
-    } else {
-        inet_ntop(AF_INET6, &addr6, (char*)addr, sizeof(addr6));
-    }
-
-    std::stringstream ss;
-    ss << "Sockaddr4or6 ["
-       << (ipv4 ? "ipv4" : "ipv6")
-       << ", " << addr << "]";
-    return ss.str();
-}
-
+const std::string UdpConnection::LOCALHOST = "127.0.0.1";
 
 void UdpConnection::open_socket() {
     socket_fd = socket(AF_INET6, SOCK_DGRAM, 0);
@@ -62,55 +46,33 @@ UdpConnection::~UdpConnection() {
     close_socket();
 }
 
-sockaddr_4or6 UdpConnection::getAddress(std::string addr, in_port_t port) {
-    sockaddr_4or6 address;
-
-    address.ipv4 = true;
-    address.addr4.sin_family = AF_INET;
-    address.addr4.sin_port = htons(port);
-    address.addr6.sin6_family = AF_INET6;
-    address.addr6.sin6_port = htons(port);
-
-    auto p_res = inet_pton(AF_INET, addr.c_str(), &address.addr4.sin_addr);
-    if(p_res != 1) {
-        address.ipv4 = false;
-        p_res = inet_pton(AF_INET6, addr.c_str(), &address.addr6.sin6_addr);
-        if(p_res != 1) {
-            raiseError("inet_pton() failed");
-        }
-    }
-
-    return address;
-}
-
-
-void UdpConnection::send_msg(uint8_t *buffer, size_t len, sockaddr_4or6 &address) {
-    ssize_t s_res;
-    if(address.ipv4) {
+void UdpConnection::send_msg(uint8_t *buffer, size_t len, sockaddr_storage& address) {
+    ssize_t result;
+    if(address.ss_family == AF_INET) {
         logDebug() << "UdpConnection: Sending via ipv4";
-        s_res = sendto(socket_fd, buffer, len, 0, (sockaddr*) &address.addr4, sizeof(address.addr4));
+        result = sendto(socket_fd, buffer, len, 0, (sockaddr*) &address, sizeof(sockaddr_in));
     } else {
         logDebug() << "UdpConnection: Sending via ipv6";
-        s_res = sendto(socket_fd, buffer, len, 0, (sockaddr*) &address.addr6, sizeof(address.addr6));
+        result = sendto(socket_fd, buffer, len, 0, (sockaddr*) &address, sizeof(sockaddr_in6));
     }
 
-    if(s_res < 0) {
+    if(result < 0) {
         raiseError("sendto() failed");
     }
 }
 
-sockaddr_4or6 UdpConnection::receive(uint8_t* buffer, size_t buffer_size, size_t& data_length) {
+sockaddr_storage UdpConnection::receive(uint8_t* buffer, size_t buffer_size, size_t& data_length) {
     logDebug() << "UdpConnection: Waiting for message";
 
-    struct sockaddr_in6 remote_address;
-    socklen_t addrlen = sizeof(remote_address);
+    sockaddr_storage sender;
+    socklen_t addrlen = sizeof(sender);
 
     ssize_t value = recvfrom(
             socket_fd,
             buffer,
             buffer_size,
             0, // FLAGS
-            (struct sockaddr *)&remote_address, &addrlen);
+            (struct sockaddr *)&sender, &addrlen);
 
     if(value < 0) {
         raiseError("Message receive failed");
@@ -119,8 +81,54 @@ sockaddr_4or6 UdpConnection::receive(uint8_t* buffer, size_t buffer_size, size_t
         data_length = (size_t) value;
     }
 
-    sockaddr_4or6 sender;
-    sender.ipv4 = false; // ipv4 addresses are mapped as https://en.wikipedia.org/wiki/IPv6#IPv4-mapped_IPv6_addresses
-    sender.addr6 = remote_address;
     return sender;
+}
+
+sockaddr_storage UdpConnection::getAddress(const std::string& addr, in_port_t port) {
+    sockaddr_storage address;
+    sockaddr_in* addr4 = (sockaddr_in*) &address;
+    sockaddr_in6* addr6 = (sockaddr_in6*) &address;
+
+    addr4->sin_family = AF_INET;
+    addr4->sin_port = port;
+    auto p_res = inet_pton(AF_INET, addr.c_str(), &addr4->sin_addr);
+
+    if(p_res != 1) {
+        addr6->sin6_family = AF_INET6;
+        addr6->sin6_port = port;
+        p_res = inet_pton(AF_INET6, addr.c_str(), &addr6->sin6_addr);
+
+        if(p_res != 1) {
+            raiseError("inet_pton() failed");
+        }
+    }
+
+    return address;
+}
+
+std::string UdpConnection::addressStr(sockaddr_storage& address) {
+    char* addr[200];
+    bool ipv4 = address.ss_family == AF_INET;
+
+    if(ipv4) {
+        inet_ntop(AF_INET, &address, (char*)addr, sizeof(sockaddr_in));
+    } else {
+        inet_ntop(AF_INET6, &address, (char*)addr, sizeof(sockaddr_in6));
+    }
+
+    std::stringstream ss;
+    ss << "sockaddr_storage ["
+       << (ipv4 ? "ipv4" : "ipv6")
+       << ", " << addr << "]";
+    return ss.str();
+}
+
+void UdpConnection::setAddrPort(sockaddr_storage* address, in_port_t port) {
+    bool ipv4 = address->ss_family == AF_INET;
+
+    if(ipv4) {
+        ((sockaddr_in*)address)->sin_port = port;
+    } else {
+        ((sockaddr_in6*)address)->sin6_port = port;
+    }
 }

@@ -7,12 +7,10 @@ static const int BUF_SIZE = 512;
 #include <cstdio>
 #include <cstdlib>
 #include <netdb.h>
-#include <zconf.h>
 #include <cstring>
 #include <arpa/inet.h>
 
 #include "Serializer.h"
-#include "AddressInfo.h"
 #include <vector>
 #include <UdpConnection.h>
 
@@ -24,7 +22,7 @@ private:
     UdpConnection connection;
     UdpConnection con_send;
     Serializer serializer;
-    std::vector<sockaddr_4or6> sensors;
+    std::vector<sockaddr_storage> sensors;
 public:
     ControlCenter(Serializer serializer);
     ~ControlCenter();
@@ -33,7 +31,7 @@ public:
     void init_connection();
 private:
     std::vector<std::string> get_central_ips();
-    void update_sensor_list(sockaddr_4or6);
+    void update_sensor_list(sockaddr_storage);
 
 };
 
