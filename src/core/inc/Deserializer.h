@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <limits>
 
 class Deserializer {
 public:
@@ -93,6 +94,18 @@ inline Deserializer& Deserializer::read<int64_t>(Deserializer::TypeTag<int64_t>:
     uint64_t stored;
     read<uint64_t>(stored);
     memcpy(&value, &stored, sizeof(value));
+    return *this;
+}
+
+template <>
+inline Deserializer& Deserializer::read<double>(Deserializer::TypeTag<double>::type &value) {
+    static_assert(std::numeric_limits<double>::is_iec559);
+    static_assert(sizeof(double) == sizeof(uint64_t));
+
+    uint64_t storage;
+    read<uint64_t>(storage);
+    memcpy(&value, &storage, sizeof(value));
+
     return *this;
 }
 

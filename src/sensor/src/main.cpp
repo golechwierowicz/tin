@@ -6,6 +6,7 @@
 #include <Sensor.h>
 #include <Deserializer.h>
 
+static const int BUF_SIZE = 2048;
 using namespace std;
 bool quit = false;
 
@@ -22,11 +23,10 @@ void signal_handler( int signum ) {
 
 int main() {
     signal(SIGINT, signal_handler);
-
+    uint8_t buf[BUF_SIZE];
     while(!quit) {
-        sensor.send_test_msg(); // this will be ping in the future
         sensor.send_request_msg();
-        sensor.receive_cc_config_msg();
+        sensor.receive_cc_config_msg(buf, BUF_SIZE);
         this_thread::sleep_for(std::chrono::seconds(2));
     }
     exit(0);

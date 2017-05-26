@@ -29,7 +29,7 @@ void CntSensorConfigBlock::deserialize(Deserializer &deserializer) {
 
 std::string CntSensorConfigBlock::toString() {
     std::stringstream ss;
-    ss << "CntSensorConfigBlocvk ["
+    ss << "CntSensorConfigBlock ["
        << "port_id: " << port_id << ", "
        << "cnt_ip: " << cnt_ip << ", "
        << "central_ips: {";

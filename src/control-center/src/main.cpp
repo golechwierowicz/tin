@@ -21,9 +21,7 @@ int main() {
     signal(SIGINT, signal_handler);
 
 	while(!quit) {
-		cc.recv_test_sensor_msg();
         cc.recv_sensor_request_msg();
-//        cc.broadcast_sensors();
 	}
     exit(0);
 }

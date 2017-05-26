@@ -36,3 +36,4 @@ void Serializer::clear() {
     bool in_block = false;
     std::fill_n(buffer, BUFFER_SIZE, 0);
 }
+

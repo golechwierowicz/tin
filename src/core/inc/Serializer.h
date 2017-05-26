@@ -8,6 +8,7 @@
 #include <type_traits>
 #include <stdexcept>
 #include <cstring>
+#include <limits>
 
 class Serializer {
 public:
@@ -83,6 +84,16 @@ inline Serializer& Serializer::write<int32_t>(Serializer::TypeTag<int32_t>::type
     uint32_t storage;
     memcpy(&storage, &value, sizeof(value));
     return write<uint32_t>(storage);
+}
+
+template <>
+inline Serializer& Serializer::write<double>(Serializer::TypeTag<double>::type value) {
+    static_assert(std::numeric_limits<double>::is_iec559);
+    static_assert(sizeof(double) == sizeof(uint64_t));
+
+    uint64_t storage;
+    memcpy(&storage, &value, sizeof(double));
+    return write<uint64_t>(storage);
 }
 
 template <>
