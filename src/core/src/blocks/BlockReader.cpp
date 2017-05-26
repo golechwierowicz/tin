@@ -36,7 +36,7 @@ BlockReader::BlockReader(uint8_t *message_buffer, size_t message_size) :
                 blocks.push_back((AbstractBlock*)block);
             } break;
             default: {
-                logWarn() << "Skipping unknown block type";
+                logWarn() << "BlockReader: Skipping unknown block type";
             } break;
         }
     }

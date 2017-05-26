@@ -5,10 +5,9 @@
 #include <cstdio>
 #include <netdb.h>
 #include <cstdlib>
-#include <zconf.h>
 #include <cstring>
 #include <Serializer.h>
-#include <AddressInfo.h>
+#include <SensorConfig.h>
 #include <string>
 #include <arpa/inet.h>
 #include <vector>
@@ -17,18 +16,16 @@
 
 class Sensor {
 private:
-    // to be removed once reading config from file is implemented !!!
-    const static SensorType DEFAULT_SENSOR_TYPE = temp_sensor;
-    ///
     Serializer serializer;
     UdpConnection con_send;
     UdpConnection con_recv;
+
     SensorConfig* config;
-    AddressInfo* addrInfo;
+    std::string ip_address;
+    in_port_t port = 4049;
     std::vector<std::string> central_ips;
 
     void init_recv_connection();
-    void create_request_block();
     void reload_config(in_port_t);
 public:
     Sensor(Serializer serializer);

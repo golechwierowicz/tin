@@ -1,52 +1,46 @@
 #include <Sensor.h>
 #include <Deserializer.h>
-#include <CommonBlock.h>
 #include <blocks/BlockReader.h>
 #include <blocks/CntSensorConfigBlock.h>
 #include <Logger.h>
 #include <blocks/RequestConfigBlock.h>
 
-Sensor::Sensor(Serializer serializer) : serializer(serializer) {
-    // dummy method, will need to implement reading conf form file
-    config = init_config();
+Sensor::Sensor(Serializer serializer) :
+        serializer(serializer),
+        port(4049), // TO BE CHANGED AND READ FROM CONFIG
+        ip_address(UdpConnection::LOCALHOST),
+        config(init_config()) {
     con_send.open_socket();
     con_recv.open_socket();
-    // will need to change the address when multiple sensor come online, port can stay
-    addrInfo = new AddressInfo(4049, LOCALHOST);
+
     init_recv_connection();
 }
 
 void Sensor::init_recv_connection() {
-    con_recv.bind_port(addrInfo->getPort());
+    con_recv.bind_port(port);
 }
 
 Sensor::~Sensor() {
     con_recv.close_socket();
     con_send.close_socket();
-    delete addrInfo;
 }
-// to be changed, needs to read conf from file/info sent by CC/any kind of init conf
+
 SensorConfig* Sensor::init_config() {
-    // jak sie tu uzyje normalnego stringa zdefiniowanego jako static w udpconnection to wywala blad
-    // w funkcji inet_pton "UdpConnection: inet_pton() failed (Success)"
-    // wiec uzywam tego extern char* localhost
-    // return new SensorConfig(5, 5, 5, DEFAULT_CC_PORT, UdpConnection::LOCALHOST);
-
-    return new SensorConfig(DEFAULT_SENSOR_TYPE, DEFAULT_CC_PORT, LOCALHOST);\
-}
-
-void Sensor::create_request_block() {
-    RequestConfigBlock configBlock(addrInfo->getPort());
-    configBlock.serialize(serializer);
+    // to be changed, needs to read conf from file/info sent by CC/any kind of init conf
+    // dummy method, will need to implement reading conf form file
+    return new SensorConfig(st_temp_sensor, 4040, UdpConnection::LOCALHOST);
 }
 
 void Sensor::send_request_msg() {
     serializer.clear();
-    create_request_block();
+    RequestConfigBlock configBlock(port);
+    configBlock.serialize(serializer);
+
     uint16_t size;
     uint8_t* buffer = serializer.get_buffer(size);
 
     try {
+        log() << "Sending: " << configBlock.toString();
         auto addr = UdpConnection::getAddress(config->getCc_addr(), config->getCc_port());
         con_send.send_msg(buffer, size, addr);
     } catch(const std::runtime_error& e) {
