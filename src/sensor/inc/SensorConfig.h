@@ -8,26 +8,31 @@
 #include <netinet/in.h>
 #include <string>
 
+enum SensorType {
+    smoke_sensor = 2,
+    ir_sensor = 3,
+    temp_sensor = 4
+};
+
 class SensorConfig {
 public:
-    SensorConfig(int heat_limit, int smoke_limit, int infrared_limit, in_port_t cc_port, std::string cc_addr);
+    SensorConfig(SensorType type, in_port_t cc_port, std::string cc_addr);
     ~SensorConfig();
 
     in_port_t getCc_port() const;
     void setCc_port(in_port_t cc_port);
-    int getHeat_limit() const;
-    void setHeat_limit(int heat_limit);
-    int getSmoke_limit() const;
-    void setSmoke_limit(int smoke_limit);
-    int getInfrared_limit() const;
-    void setInfrared_limit(int infrared_limit);
-    std::string getCC_Addr() const;
-    void setCC_Addr(int infrared_limit);
+    const std::string &getCc_addr() const;
+    void setCc_addr(const std::string &cc_addr);
+
+    SensorType getType() const;
+    uint32_t getId() const;
 
 private:
-    int heat_limit;
-    int smoke_limit;
-    int infrared_limit;
+    // to be read from file
+    uint32_t id;
+    // to be read from file
+    SensorType type;
+
     in_port_t cc_port;
     std::string cc_addr;
 };

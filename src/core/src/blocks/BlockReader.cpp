@@ -17,7 +17,7 @@ BlockReader::BlockReader(uint8_t *message_buffer, size_t message_size) :
                 blocks.push_back((AbstractBlock*)block);
             } break;
             case bt_smoke_read:
-            case bt_IR_read:
+            case bt_ir_read:
             case bt_temp_read: {
                 SensorMeasurementBlock* block = new SensorMeasurementBlock(
                         static_cast<BlockType>(deserializer.get_block_type())

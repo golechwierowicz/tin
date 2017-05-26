@@ -18,9 +18,6 @@ struct sockaddr_4or6 {
         addr4.sin_port = htons(port);
         addr6.sin6_port = htons(port);
     }
-//    bool operator==(const sockaddr_4or6& o) {
-//        return addr6.sin6_port == o.addr6.sin6_port && addr6.sin6_addr ? true : false;
-//    }
 };
 
 class UdpConnection {

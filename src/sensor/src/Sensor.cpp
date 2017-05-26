@@ -1,5 +1,4 @@
 #include <Sensor.h>
-#include <iostream>
 #include <Deserializer.h>
 #include <CommonBlock.h>
 #include <blocks/BlockReader.h>
@@ -32,7 +31,8 @@ SensorConfig* Sensor::init_config() {
     // w funkcji inet_pton "UdpConnection: inet_pton() failed (Success)"
     // wiec uzywam tego extern char* localhost
     // return new SensorConfig(5, 5, 5, DEFAULT_CC_PORT, UdpConnection::LOCALHOST);
-    return new SensorConfig(5, 5, 5, DEFAULT_CC_PORT, LOCALHOST);
+
+    return new SensorConfig(DEFAULT_SENSOR_TYPE, DEFAULT_CC_PORT, LOCALHOST);\
 }
 
 void Sensor::create_request_block() {
@@ -47,15 +47,7 @@ void Sensor::send_request_msg() {
     uint8_t* buffer = serializer.get_buffer(size);
 
     try {
-        auto addr = UdpConnection::getAddress(config->getCC_Addr(), config->getCc_port());
-        printf("%s %d\n", config->getCC_Addr().c_str(), config->getCc_port());
-        char* tmp[200];
-        if(addr.ipv4) {
-            inet_ntop(AF_INET, &addr.addr4, (char*)tmp, sizeof(addr.addr4));}
-//        } else {
-//            inet_ntop(AF_INET6, &addr6, (char*)addr, sizeof(addr6));
-//        }
-        printf("%s %d\n", tmp, ntohs(addr.addr4.sin_port));
+        auto addr = UdpConnection::getAddress(config->getCc_addr(), config->getCc_port());
         con_send.send_msg(buffer, size, addr);
     } catch(const std::runtime_error& e) {
         logError() << e.what();
@@ -100,8 +92,4 @@ void Sensor::reload_config(in_port_t port) {
 void Sensor::close_connection() {
     con_send.close_socket();
     con_recv.close_socket();
-}
-
-uint32_t Sensor::getId() const {
-    return id;
 }

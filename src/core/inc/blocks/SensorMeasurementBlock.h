@@ -14,7 +14,7 @@ public:
     SensorMeasurementBlock(enum BlockType blockType, double readValue) : AbstractBlock(blockType){}
     void serialize(Serializer&);
     void deserialize(Deserializer&);
-    std::string SensorMeasurementBlock::toString();
+    std::string toString();
     double getReadValue() const;
 private:
     double readValue;

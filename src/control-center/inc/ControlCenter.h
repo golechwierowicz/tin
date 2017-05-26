@@ -15,6 +15,7 @@ static const int BUF_SIZE = 512;
 #include "AddressInfo.h"
 #include <vector>
 #include <UdpConnection.h>
+#include <map>
 
 class ControlCenter {
 private:
@@ -24,17 +25,15 @@ private:
     UdpConnection connection;
     UdpConnection con_send;
     Serializer serializer;
-    std::vector<sockaddr_4or6> sensors;
+    std::map<uint32_t, sockaddr_4or6> sensors;
+    std::vector<std::string> get_central_ips();
+    void update_sensor_list(uint32_t sensor_id, sockaddr_4or6);
 public:
     ControlCenter(Serializer serializer);
     ~ControlCenter();
     void recv_sensor_request_msg();
     void close_connection();
     void init_connection();
-private:
-    std::vector<std::string> get_central_ips();
-    void update_sensor_list(sockaddr_4or6);
-
 };
 
 #endif // _CONTROL_CENTER_H_
