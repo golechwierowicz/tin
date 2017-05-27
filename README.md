@@ -1,5 +1,11 @@
 # System czujników CZUJNIX
 
+## Wymagania
+
+Boost oraz libconfig++
+
+Na debianowych: apt-get install libconfig++-dev
+
 ## Ręczne budowanie
 
 ```
