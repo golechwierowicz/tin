@@ -4,6 +4,7 @@ tin.cbp
 
 # Build files
 cmake-build-debug/
+cmake-build-release/
 build/
 
 # vagrant 

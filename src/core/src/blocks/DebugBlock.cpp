@@ -4,17 +4,17 @@
 void DebugBlock::serialize(Serializer& serializer) {
     serializer
             .begin_block(type)
-            .write(u8_value)
-            .write(i64_value)
-            .write(str_value)
+            .write<uint8_t>(u8_value)
+            .write<int64_t>(i64_value)
+            .write<const std::string&>(str_value)
             .end_block();
 }
 
 void DebugBlock::deserialize(Deserializer& deserializer) {
     deserializer
-            .read(u8_value)
-            .read(i64_value)
-            .read(str_value);
+            .read<uint8_t>(u8_value)
+            .read<int64_t>(i64_value)
+            .read<std::string>(str_value);
 }
 
 std::string DebugBlock::toString() {

@@ -164,7 +164,13 @@ local BLOCK_PARSERS = {
         return ips_size + 2 + cnt_ip_size
     end,
     [BLOCK_TYPES.CNT_SENSOR_REQUEST_CONFIG] = function(buffer, maxlen, tree)
-        return 0
+        if maxlen < 2 then
+            return nil, 2
+        end
+
+        local port_id = buffer(0, 2)
+        tree:add(port_id, "PortId: " .. port_id:int())
+        return 2
     end
 }
 

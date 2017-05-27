@@ -36,8 +36,8 @@ int main() {
 
     while (running) {
         try {
-            auto addr = server.receive(message_buffer, BUFFER_SIZE - 1, message_size);
-            logDebug() << "Message from: " << addr.toString();
+            auto address = server.receive(message_buffer, BUFFER_SIZE - 1, message_size);
+            logDebug() << "Message from: " << UdpConnection::addressStr(address);
             handle_message(message_buffer, message_size);
 
         } catch (const std::runtime_error& e) {

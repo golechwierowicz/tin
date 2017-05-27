@@ -7,7 +7,7 @@ include_directories(${SHARED_LIB_INCLUDE_DIR} ./inc)
 
 set(SOURCE_FILES src/main.cpp
         src/Sensor.cpp inc/Sensor.h
-        inc/SensorConfig.h src/SensorConfig.cpp
-        ../core/src/AddressInfo.cpp ../core/inc/AddressInfo.h)
+        inc/SensorConfig.h
+        )
 add_executable(sensor ${SOURCE_FILES})
 target_link_libraries(sensor core)
