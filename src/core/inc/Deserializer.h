@@ -99,8 +99,8 @@ inline Deserializer& Deserializer::read<int64_t>(Deserializer::TypeTag<int64_t>:
 
 template <>
 inline Deserializer& Deserializer::read<double>(Deserializer::TypeTag<double>::type &value) {
-    static_assert(std::numeric_limits<double>::is_iec559);
-    static_assert(sizeof(double) == sizeof(uint64_t));
+    static_assert(std::numeric_limits<double>::is_iec559, "non-standard float implementation");
+    static_assert(sizeof(double) == sizeof(uint64_t), "unsupported double size");
 
     uint64_t storage;
     read<uint64_t>(storage);

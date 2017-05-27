@@ -88,8 +88,8 @@ inline Serializer& Serializer::write<int32_t>(Serializer::TypeTag<int32_t>::type
 
 template <>
 inline Serializer& Serializer::write<double>(Serializer::TypeTag<double>::type value) {
-    static_assert(std::numeric_limits<double>::is_iec559);
-    static_assert(sizeof(double) == sizeof(uint64_t));
+    static_assert(std::numeric_limits<double>::is_iec559, "non-standard float implementation");
+    static_assert(sizeof(double) == sizeof(uint64_t), "unsupported double size");
 
     uint64_t storage;
     memcpy(&storage, &value, sizeof(double));
