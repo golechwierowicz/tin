@@ -24,7 +24,6 @@ if (NOT TARGET core) # run once
 
     # testing
     enable_testing()
-    find_package(Config++ REQUIRED)
     find_package(Boost COMPONENTS unit_test_framework REQUIRED)
     include_directories(${Boost_INCLUDE_DIRS})
 
@@ -32,7 +31,11 @@ if (NOT TARGET core) # run once
             test/Core.test.cpp
             test/Serializer.test.cpp
             test/Deserializer.test.cpp
-            test/BlockReader.test.cpp)
+            test/BlockReader.test.cpp
+            test/ConfigReader.test.cpp)
     add_executable(core_test ${TEST_FILES})
     target_link_libraries(core_test ${Boost_LIBRARIES} ${CONFIG++_LIBRARY})
+    add_custom_command(TARGET core_test POST_BUILD
+                       COMMAND ${CMAKE_COMMAND} -E copy_directory
+                          ${CMAKE_SOURCE_DIR}/src/core/resources $<TARGET_FILE_DIR:core_test>)
 endif ()
