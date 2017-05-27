@@ -12,6 +12,7 @@ if (NOT TARGET core) # run once
             src/Serializer.cpp inc/Serializer.h
             src/Deserializer.cpp inc/Deserializer.h
             src/UdpConnection.cpp inc/UdpConnection.h
+            src/ConfigReader.cpp inc/ConfigReader.h
             src/errorhandling.cpp inc/errorhandling.h
             src/blocks/BlockReader.cpp inc/blocks/BlockReader.h
             inc/blocks/AbstractBlock.h
