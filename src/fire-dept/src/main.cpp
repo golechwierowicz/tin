@@ -23,7 +23,7 @@ int main() {
 
     try {
         server.open_socket();
-        server.bind_port(1234);
+        server.bind_port(4099);
     } catch (const std::runtime_error& e) {
         logError() << e.what();
         exit(1);
