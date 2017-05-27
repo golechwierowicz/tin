@@ -12,7 +12,6 @@ public:
     const BlockType type;
 
     virtual void serialize(Serializer& serializer) = 0;
-    virtual void deserialize(Deserializer& deserializer) = 0;
 
     virtual std::string toString() = 0;
 };

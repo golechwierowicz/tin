@@ -5,20 +5,19 @@
 #include <vector>
 #include <netinet/in.h>
 #include "AbstractBlock.h"
+#include <memory>
 
-class CntSensorConfigBlock : public AbstractBlock {
-public:
+struct CntSensorConfigBlock : public AbstractBlock {
     std::vector<std::string> central_ips;
     in_port_t port_id;
     std::string cnt_ip;
 
-    CntSensorConfigBlock() : AbstractBlock(BlockType::cnt_sensor_config) {}
     CntSensorConfigBlock(std::vector<std::string> central_ips,
                          in_port_t port_id,
                          std::string cnt_ip);
 
     void serialize(Serializer& serializer);
-    void deserialize(Deserializer& deserializer);
+    static std::unique_ptr<CntSensorConfigBlock> deserialize(Deserializer& deserializer);
     std::string toString();
 };
 

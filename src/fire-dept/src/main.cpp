@@ -9,7 +9,7 @@
 void handle_message(uint8_t* message_buffer, size_t message_size) {
     BlockReader reader(message_buffer, message_size);
 
-    for(AbstractBlock* block : reader.blocks) {
+    for(auto& block : reader.blocks) {
         log() << "Message: " << block->toString();
     }
 }

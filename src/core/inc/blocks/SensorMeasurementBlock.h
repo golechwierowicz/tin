@@ -7,17 +7,19 @@
 
 
 #include "AbstractBlock.h"
+#include <memory>
 
 class SensorMeasurementBlock : public AbstractBlock{
+    double read_value;
+
 public:
-    SensorMeasurementBlock(BlockType blockType) : AbstractBlock(blockType) {}
     SensorMeasurementBlock(BlockType blockType, double readValue) : AbstractBlock(blockType){}
+
     void serialize(Serializer&);
-    void deserialize(Deserializer&);
+    static std::unique_ptr<SensorMeasurementBlock> deserialize(Deserializer& deserializer, BlockType block_type);
     std::string toString();
+
     double getReadValue() const;
-private:
-    double readValue;
 };
 
 

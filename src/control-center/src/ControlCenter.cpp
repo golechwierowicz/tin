@@ -34,9 +34,9 @@ void ControlCenter::recv_sensor_request_msg() {
         size_t bytesRead;
         auto addr = connection.receive(buf, BUF_SIZE, bytesRead);
         BlockReader reader(buf, bytesRead);
-        for (AbstractBlock* block : reader.blocks) {
+        for (auto& block : reader.blocks) {
             if (block->type == BlockType::request_config) {
-                auto requestConfigBlock = (RequestConfigBlock*) block;
+                auto requestConfigBlock = reinterpret_cast<RequestConfigBlock*>(block.get());
                 UdpConnection::setAddrPort(addr, requestConfigBlock->getPort());
                 log() << UdpConnection::addressStr(addr);
 

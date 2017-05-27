@@ -1,6 +1,14 @@
 #include <sstream>
 #include "blocks/DebugBlock.h"
 
+using namespace std;
+
+DebugBlock::DebugBlock(uint8_t u8_value, int64_t i64_value, const string &str_value)
+        : AbstractBlock(BlockType::debug),
+          u8_value(u8_value),
+          i64_value(i64_value),
+          str_value(str_value) {}
+
 void DebugBlock::serialize(Serializer& serializer) {
     serializer
             .begin_block(type)
@@ -10,11 +18,17 @@ void DebugBlock::serialize(Serializer& serializer) {
             .end_block();
 }
 
-void DebugBlock::deserialize(Deserializer& deserializer) {
+std::unique_ptr<DebugBlock> DebugBlock::deserialize(Deserializer& deserializer) {
+    uint8_t u8_value;
+    int64_t i64_value;
+    std::string str_value;
+
     deserializer
             .read<uint8_t>(u8_value)
             .read<int64_t>(i64_value)
             .read<std::string>(str_value);
+
+    return make_unique<DebugBlock>(u8_value, i64_value, str_value);
 }
 
 std::string DebugBlock::toString() {

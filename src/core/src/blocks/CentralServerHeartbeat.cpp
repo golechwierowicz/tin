@@ -1,6 +1,8 @@
 #include "blocks/CentralServerHeartbeat.h"
 #include <sstream>
 
+using namespace std;
+
 CentralServerHeartbeat::CentralServerHeartbeat(int32_t id)
         : AbstractBlock(BlockType::central_server_heartbeat),
           id(id) {}
@@ -11,13 +13,17 @@ void CentralServerHeartbeat::serialize(Serializer &serializer) {
             .end_block();
 }
 
-void CentralServerHeartbeat::deserialize(Deserializer &deserializer) {
+std::unique_ptr<CentralServerHeartbeat> CentralServerHeartbeat::deserialize(Deserializer &deserializer) {
+    int32_t id;
+
     deserializer
             .read<int32_t>(id);
+
+    return make_unique<CentralServerHeartbeat>(id);
 }
 
 std::string CentralServerHeartbeat::toString() {
-    std::stringstream str;
+    stringstream str;
     str << "CentralServerHeartbeat ["
         << "id=" << id
         << "]";
