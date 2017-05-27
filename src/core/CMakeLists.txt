@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.7)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 set(SHARED_LIB_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/inc)
 set(SHARED_LIB_INCLUDE_DIR ${SHARED_LIB_INCLUDE_DIR} PARENT_SCOPE)
@@ -15,8 +15,16 @@ if (NOT TARGET core) # run once
             src/errorhandling.cpp inc/errorhandling.h
             src/blocks/BlockReader.cpp inc/blocks/BlockReader.h
             inc/blocks/AbstractBlock.h
+            inc/blocks/BlockType.h
             src/blocks/DebugBlock.cpp inc/blocks/DebugBlock.h
-            src/blocks/CntSensorConfigBlock.cpp inc/blocks/CntSensorConfigBlock.h src/blocks/RequestConfigBlock.cpp inc/blocks/RequestConfigBlock.h src/blocks/PingBlock.cpp inc/blocks/PingBlock.h src/blocks/SensorMeasurementBlock.cpp inc/blocks/SensorMeasurementBlock.h)
+            src/blocks/CntSensorConfigBlock.cpp inc/blocks/CntSensorConfigBlock.h
+            src/blocks/RequestConfigBlock.cpp inc/blocks/RequestConfigBlock.h
+            src/blocks/PingBlock.cpp inc/blocks/PingBlock.h
+            src/blocks/SensorMeasurementBlock.cpp inc/blocks/SensorMeasurementBlock.h
+            src/blocks/SensorCommonBlock.cpp inc/blocks/SensorCommonBlock.h
+            src/blocks/CentralServerHeartbeat.cpp inc/blocks/CentralServerHeartbeat.h
+            src/blocks/CentralServerFireAlert.cpp inc/blocks/CentralServerFireAlert.h
+            src/blocks/BlockType.cpp)
     add_library(core STATIC ${SOURCE_FILES})
 
     # testing
@@ -27,7 +35,8 @@ if (NOT TARGET core) # run once
             test/Core.test.cpp
             test/Serializer.test.cpp
             test/Deserializer.test.cpp
-            test/BlockReader.test.cpp)
+            test/BlockReader.test.cpp
+            )
     add_executable(core_test ${TEST_FILES})
     target_link_libraries(core_test ${Boost_LIBRARIES})
 endif ()

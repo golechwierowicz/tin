@@ -63,7 +63,7 @@ void Sensor::receive_cc_config_msg(uint8_t *buf, size_t bufSize) {
     BlockReader reader(buf, bytes_read);
 
     for(AbstractBlock* block : reader.blocks) {
-        if(block->type == bt_cnt_sensor_config) {
+        if(block->type == BlockType::cnt_sensor_config) {
             auto configBlock = (CntSensorConfigBlock*) block;
 
             reload_config(configBlock->port_id);

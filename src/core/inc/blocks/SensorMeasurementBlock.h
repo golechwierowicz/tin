@@ -10,8 +10,8 @@
 
 class SensorMeasurementBlock : public AbstractBlock{
 public:
-    SensorMeasurementBlock(enum BlockType blockType) : AbstractBlock(blockType) {}
-    SensorMeasurementBlock(enum BlockType blockType, double readValue) : AbstractBlock(blockType){}
+    SensorMeasurementBlock(BlockType blockType) : AbstractBlock(blockType) {}
+    SensorMeasurementBlock(BlockType blockType, double readValue) : AbstractBlock(blockType){}
     void serialize(Serializer&);
     void deserialize(Deserializer&);
     std::string toString();

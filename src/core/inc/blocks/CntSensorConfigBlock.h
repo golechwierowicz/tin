@@ -12,7 +12,7 @@ public:
     in_port_t port_id;
     std::string cnt_ip;
 
-    CntSensorConfigBlock() : AbstractBlock(bt_cnt_sensor_config) {}
+    CntSensorConfigBlock() : AbstractBlock(BlockType::cnt_sensor_config) {}
     CntSensorConfigBlock(std::vector<std::string> central_ips,
                          in_port_t port_id,
                          std::string cnt_ip);

@@ -47,7 +47,7 @@ std::string CntSensorConfigBlock::toString() {
 CntSensorConfigBlock::CntSensorConfigBlock(std::vector<std::string> central_ips,
                                            in_port_t port_id,
                                            std::string cnt_ip) :
-        AbstractBlock(bt_cnt_sensor_config),
+        AbstractBlock(BlockType::cnt_sensor_config),
         central_ips(central_ips),
         port_id(port_id),
         cnt_ip(cnt_ip) {}

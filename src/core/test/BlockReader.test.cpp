@@ -3,7 +3,7 @@
 #include <blocks/DebugBlock.h>
 
 BOOST_AUTO_TEST_CASE(blocks_read_correctly) {
-    uint8_t buffer[] = {
+    const uint8_t buffer[] = {
             0, 0, 0, 0, // block type
             0, 0, 0, 22, // block size
             0x69,
@@ -22,17 +22,17 @@ BOOST_AUTO_TEST_CASE(blocks_read_correctly) {
 
     BOOST_CHECK_EQUAL(reader.blocks.size(), 2);
 
-    DebugBlock* block1 = (DebugBlock*) reader.blocks[0];
+    const DebugBlock& block1 = reinterpret_cast<DebugBlock&>(*reader.blocks[0]);
 
-    BOOST_CHECK_EQUAL(block1->type, bt_debug);
-    BOOST_CHECK_EQUAL(block1->u8_value, 0x69);
-    BOOST_CHECK_EQUAL(block1->i64_value, 0x1122334455667788);
-    BOOST_CHECK_EQUAL(block1->str_value, "abcd");
+    BOOST_CHECK_EQUAL(block1.type, BlockType::debug);
+    BOOST_CHECK_EQUAL(block1.u8_value, 0x69);
+    BOOST_CHECK_EQUAL(block1.i64_value, 0x1122334455667788);
+    BOOST_CHECK_EQUAL(block1.str_value, "abcd");
 
-    DebugBlock* block2 = (DebugBlock*) reader.blocks[1];
+    const DebugBlock& block2 = reinterpret_cast<DebugBlock&>(*reader.blocks[1]);
 
-    BOOST_CHECK_EQUAL(block2->type, bt_debug);
-    BOOST_CHECK_EQUAL(block2->u8_value, 0x96);
-    BOOST_CHECK_EQUAL(block2->i64_value, 0x8877665544332211);
-    BOOST_CHECK_EQUAL(block2->str_value, "abcdef");
+    BOOST_CHECK_EQUAL(block2.type, BlockType::debug);
+    BOOST_CHECK_EQUAL(block2.u8_value, 0x96);
+    BOOST_CHECK_EQUAL(block2.i64_value, 0x8877665544332211);
+    BOOST_CHECK_EQUAL(block2.str_value, "abcdef");
 }

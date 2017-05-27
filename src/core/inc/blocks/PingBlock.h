@@ -10,7 +10,7 @@
 
 class PingBlock : public AbstractBlock {
 public:
-    PingBlock() : AbstractBlock(bt_ping) {}
+    PingBlock() : AbstractBlock(BlockType::ping) {}
 
     void serialize(Serializer& serializer);
     void deserialize(Deserializer& deserializer);

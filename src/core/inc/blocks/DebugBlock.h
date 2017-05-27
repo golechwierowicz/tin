@@ -6,7 +6,7 @@
 
 class DebugBlock : public AbstractBlock {
 public:
-    DebugBlock() : AbstractBlock(bt_debug) {}
+    DebugBlock() : AbstractBlock(BlockType::debug) {}
 
     uint8_t u8_value;
     int64_t i64_value;
