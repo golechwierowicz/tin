@@ -41,7 +41,7 @@ void Sensor::send_request_msg() {
 
     try {
         log() << "Sending: " << configBlock.toString();
-        auto addr = UdpConnection::getAddress(config->getCc_addr(), config->getCc_port());
+        auto addr = UdpConnection::get_address(config->getCc_addr(), config->getCc_port());
         con_send.send_msg(buffer, size, addr);
     } catch(const std::runtime_error& e) {
         logError() << e.what();

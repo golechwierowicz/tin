@@ -37,8 +37,8 @@ void ControlCenter::recv_sensor_request_msg() {
         for (auto& block : reader.blocks) {
             if (block->type == BlockType::request_config) {
                 auto requestConfigBlock = reinterpret_cast<RequestConfigBlock*>(block.get());
-                UdpConnection::setAddrPort(addr, requestConfigBlock->getPort());
-                log() << UdpConnection::addressStr(addr);
+                UdpConnection::set_address_port(addr, requestConfigBlock->getPort());
+                log() << UdpConnection::address_to_str(addr);
 
                 log() << "Received: " << requestConfigBlock->toString();
 
