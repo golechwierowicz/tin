@@ -15,7 +15,7 @@ void Central::reload_config(const CentralConfig &config) {
     auto prev_config = this->config;
 
     {
-        shared_lock<shared_mutex> lock(config_lock);
+        boost::shared_lock<boost::shared_mutex> lock(config_lock);
         this->config = config;
     }
 
@@ -58,7 +58,7 @@ void Central::listen() {
         sockaddr_storage addr;
 
         {
-            shared_lock<shared_mutex> lock(connection_lock);
+            boost::shared_lock<boost::shared_mutex> lock(connection_lock);
             addr = connection.receive(buffer, buffer_size, bytes_read);
         }
 
@@ -95,7 +95,7 @@ void Central::run_sending_alerts() {
             uint16_t buffer_size;
             const uint8_t *buffer = serializer.get_buffer(buffer_size);
 
-            shared_lock<shared_mutex> lock(connection_lock);
+            boost::shared_lock<boost::shared_mutex> lock(connection_lock);
             connection.send_msg(buffer, buffer_size, get_fire_dept_address());
         }
 
@@ -126,12 +126,12 @@ void Central::send_heartbeat() {
     uint16_t buffer_size;
     const uint8_t* buffer = serializer.get_buffer(buffer_size);
 
-    shared_lock<shared_mutex> lock(connection_lock);
+    boost::shared_lock<boost::shared_mutex> lock(connection_lock);
     connection.send_msg(buffer, buffer_size, get_fire_dept_address());
 }
 
 void Central::init_socket() {
-    unique_lock<shared_mutex> lock(connection_lock);
+    boost::unique_lock<boost::shared_mutex> lock(connection_lock);
     init_socket_impl();
 }
 
@@ -146,28 +146,28 @@ void Central::init_socket_impl() {
 }
 
 void Central::apply_port_change() {
-    unique_lock<shared_mutex> lock(connection_lock);
+    boost::unique_lock<boost::shared_mutex> lock(connection_lock);
 
     connection.close_socket();
     init_socket_impl();
 }
 
 std::chrono::milliseconds Central::get_heartbeat_interval() {
-    shared_lock<shared_mutex> lock(config_lock);
+    boost::shared_lock<boost::shared_mutex> lock(config_lock);
     return chrono::milliseconds(config.heartbeet_interval_ms);
 }
 
 std::chrono::milliseconds Central::get_alert_interval() {
-    shared_lock<shared_mutex> lock(config_lock);
+    boost::shared_lock<boost::shared_mutex> lock(config_lock);
     return chrono::milliseconds(config.alert_interval_ms);
 }
 
 int32_t Central::get_id() {
-    shared_lock<shared_mutex> lock(config_lock);
+    boost::shared_lock<boost::shared_mutex> lock(config_lock);
     return config.id;
 }
 
 sockaddr_storage Central::get_fire_dept_address() {
-    shared_lock<shared_mutex> lock(config_lock);
+    boost::shared_lock<boost::shared_mutex> lock(config_lock);
     return UdpConnection::get_address(config.fire_dept_ip, config.fire_dept_port);
 }

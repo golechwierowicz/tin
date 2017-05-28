@@ -53,12 +53,12 @@ void AlertAggregator::insert(const SensorCommonBlock &common, const SensorMeasur
         return;
 
     const auto key = SensorKey(common.get_latitude(), common.get_longitude());
-    shared_lock<shared_mutex> lockUpdate(aggregated_data_lock);
+    boost::shared_lock<boost::shared_mutex> lockUpdate(aggregated_data_lock);
 
     auto it = aggregated_data.find(key);
     if (it == aggregated_data.end()) {
         lockUpdate.unlock();
-        unique_lock<shared_mutex> lockInsert(aggregated_data_lock);
+        boost::unique_lock<boost::shared_mutex> lockInsert(aggregated_data_lock);
         it = aggregated_data.find(key);
         if (it == aggregated_data.end()) {
             aggregated_data[key] = SensorSingleData(
@@ -75,7 +75,7 @@ void AlertAggregator::insert(const SensorCommonBlock &common, const SensorMeasur
 }
 
 std::vector<CentralServerFireAlert> AlertAggregator::extractAlerts() {
-    unique_lock<shared_mutex> lock(aggregated_data_lock);
+    boost::unique_lock<boost::shared_mutex> lock(aggregated_data_lock);
     vector<CentralServerFireAlert> result;
 
     auto it = aggregated_data.begin();
