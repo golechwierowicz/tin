@@ -1,7 +1,7 @@
 #pragma once
 
 #include <unordered_map>
-#include <shared_mutex>
+#include <boost/thread/shared_mutex.hpp>
 #include <atomic>
 #include <vector>
 #include "blocks/SensorCommonBlock.h"
@@ -60,7 +60,7 @@ class AlertAggregator {
             SensorSingleData,
             SensorKeyHash
     > aggregated_data;
-    std::shared_mutex aggregated_data_lock;
+    boost::shared_mutex aggregated_data_lock;
 
 public:
     void insert(const SensorCommonBlock &common, const SensorMeasurementBlock &measurement);

@@ -1,7 +1,15 @@
 #include "blocks/BlockType.h"
 
+namespace {
+    struct BlockTypeHash {
+        std::size_t operator()(BlockType bt) const noexcept {
+            return static_cast<uint32_t>(bt);
+        }
+    };
+}
+
 std::ostream &operator<<(std::ostream &o, const BlockType &block_type) {
-    static std::unordered_map<BlockType, std::string> block_type_to_string = {
+    static std::unordered_map<BlockType, std::string, BlockTypeHash> block_type_to_string = {
             {BlockType::debug, "BlockType::debug"},
             {BlockType::sensor_common, "BlockType::sensor_common"},
             {BlockType::smoke_read, "BlockType::smoke_read"},
