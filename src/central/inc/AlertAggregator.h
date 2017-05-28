@@ -46,6 +46,7 @@ class AlertAggregator {
 
     private:
         std::atomic_flag lock_flag = ATOMIC_FLAG_INIT;
+        std::mutex l;
     };
 
     struct SensorSingleDataLock {
