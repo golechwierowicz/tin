@@ -77,38 +77,36 @@ local BLOCK_PARSERS = {
         return 13
     end,
     [BLOCK_TYPES.SENSOR_SMOKE] = function(buffer, maxlen, tree)
-        if maxlen < 1 then
-            return nil, 1
+        if maxlen < 8 then
+            return nil, 8
         end
 
-        local smoke_exists = buffer(0, 1)
-        tree:add(smoke_exists, "SmokeExists: " .. (smoke_exists:int() ~= 0 and "true" or "false"))
+        local smoke_exists = buffer(0, 8)
+        tree:add(smoke_exists, "SmokeValue: " .. smoke_exists:float())
 
-        return 1
+        return 8
     end,
     [BLOCK_TYPES.SENSOR_INFRARED] = function(buffer, maxlen, tree)
-        if maxlen < 2 then
-            return nil, 2
+        if maxlen < 8 then
+            return nil, 8
         end
 
-        local sensor_version = buffer(0, 1)
-        local infrared_value = buffer(1, 1)
+        local infrared_value = buffer(0, 8)
 
-        tree:add(sensor_version, "SensorVersion: " .. sensor_version:int())
-        tree:add(infrared_value, "InfraredValue: " .. infrared_value:int())
+        tree:add(infrared_value, "InfraredValue: " .. infrared_value:float())
 
-        return 2
+        return 8
     end,
     [BLOCK_TYPES.SENSOR_TEMPERATURE] = function(buffer, maxlen, tree)
-        if maxlen < 2 then
-            return nil, 2
+        if maxlen < 8 then
+            return nil, 8
         end
 
-        local temperature = buffer(0, 2)
+        local temperature = buffer(0, 8)
 
-        tree:add(temperature, "Temperature: " .. temperature:int())
+        tree:add(temperature, "Temperature: " .. temperature:float())
 
-        return 2
+        return 8
     end,
     [BLOCK_TYPES.CENTRAL_SERVER_FIRE_ALERT] = function(buffer, maxlen, tree)
         if maxlen < 16 then
