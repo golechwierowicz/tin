@@ -7,13 +7,13 @@
 
 
 #include "AbstractBlock.h"
+#include <memory>
 
-class PingBlock : public AbstractBlock {
-public:
-    PingBlock() : AbstractBlock(bt_ping) {}
+struct PingBlock : public AbstractBlock {
+    PingBlock() : AbstractBlock(BlockType::ping) {}
 
     void serialize(Serializer& serializer);
-    void deserialize(Deserializer& deserializer);
+    static std::unique_ptr<PingBlock> deserialize(Deserializer& deserializer);
     std::string toString();
 };
 

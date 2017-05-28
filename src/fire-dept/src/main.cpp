@@ -9,7 +9,7 @@
 void handle_message(uint8_t* message_buffer, size_t message_size) {
     BlockReader reader(message_buffer, message_size);
 
-    for(AbstractBlock* block : reader.blocks) {
+    for(auto& block : reader.blocks) {
         log() << "Message: " << block->toString();
     }
 }
@@ -23,7 +23,7 @@ int main() {
 
     try {
         server.open_socket();
-        server.bind_port(1234);
+        server.bind_port(4099);
     } catch (const std::runtime_error& e) {
         logError() << e.what();
         exit(1);
@@ -37,7 +37,7 @@ int main() {
     while (running) {
         try {
             auto address = server.receive(message_buffer, BUFFER_SIZE - 1, message_size);
-            logDebug() << "Message from: " << UdpConnection::addressStr(address);
+            logDebug() << "Message from: " << UdpConnection::address_to_str(address);
             handle_message(message_buffer, message_size);
 
         } catch (const std::runtime_error& e) {

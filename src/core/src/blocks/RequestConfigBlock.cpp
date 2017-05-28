@@ -4,6 +4,8 @@
 
 #include "blocks/RequestConfigBlock.h"
 
+using namespace std;
+
 void RequestConfigBlock::serialize(Serializer &serializer) {
     serializer
         .begin_block(type)
@@ -11,9 +13,13 @@ void RequestConfigBlock::serialize(Serializer &serializer) {
         .end_block();
 }
 
-void RequestConfigBlock::deserialize(Deserializer &deserializer) {
+std::unique_ptr<RequestConfigBlock> RequestConfigBlock::deserialize(Deserializer &deserializer) {
+    in_port_t port;
+
     deserializer
         .read<uint16_t>(port);
+
+    return make_unique<RequestConfigBlock>(port);
 }
 
 std::string RequestConfigBlock::toString() {
@@ -24,8 +30,4 @@ std::string RequestConfigBlock::toString() {
 
 in_port_t RequestConfigBlock::getPort() const {
     return port;
-}
-
-void RequestConfigBlock::setPort(in_port_t port) {
-    RequestConfigBlock::port = port;
 }

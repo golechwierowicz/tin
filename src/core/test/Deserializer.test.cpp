@@ -1,5 +1,5 @@
-#include <boost/test/unit_test.hpp>
 #include <Deserializer.h>
+#include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_CASE(values_should_be_correctly_deserialized) {
     uint8_t buffer[] = {
@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_CASE(values_should_be_correctly_deserialized) {
     BOOST_CHECK_EQUAL(int32_value, 0x11223344);
     BOOST_CHECK_EQUAL(int64_value, 0x1122334455667788);
     BOOST_CHECK_EQUAL(string_value, std::string("abcd"));
-    BOOST_CHECK_EQUAL(1, deserializer.get_block_type());
+    BOOST_CHECK_EQUAL(BlockType::sensor_common, deserializer.get_block_type());
 }
 
 BOOST_AUTO_TEST_CASE(multiple_blocks_handled_correctly) {
@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE(multiple_blocks_handled_correctly) {
     BOOST_CHECK_EQUAL(value_3, 3);
     BOOST_CHECK_EQUAL(value_4, 4);
     BOOST_CHECK_EQUAL(value_5, 5);
-    BOOST_CHECK_EQUAL(deserializer.get_block_type(), 2);
+    BOOST_CHECK_EQUAL(deserializer.get_block_type(), BlockType::smoke_read);
 }
 
 BOOST_AUTO_TEST_CASE(insufficient_block_size_should_cause_exception) {

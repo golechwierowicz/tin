@@ -46,7 +46,7 @@ UdpConnection::~UdpConnection() {
     close_socket();
 }
 
-void UdpConnection::send_msg(uint8_t *buffer, size_t len, sockaddr_storage address) {
+void UdpConnection::send_msg(const uint8_t *buffer, size_t len, sockaddr_storage address) {
     ssize_t result;
     if (address.ss_family == AF_INET) {
         result = sendto(socket_fd, buffer, len, 0, (sockaddr*)&address, sizeof(sockaddr_in));
@@ -57,7 +57,7 @@ void UdpConnection::send_msg(uint8_t *buffer, size_t len, sockaddr_storage addre
     if(result < 0) {
         raiseError("sendto() failed");
     } else {
-        logDebug() << "UdpConnection: Message sent to: " << addressStr(address);
+        logDebug() << "UdpConnection: Message sent to: " << address_to_str(address);
     }
 }
 
@@ -84,7 +84,7 @@ sockaddr_storage UdpConnection::receive(uint8_t* buffer, size_t buffer_size, siz
     return sender;
 }
 
-sockaddr_storage UdpConnection::getAddress(const std::string& addr, in_port_t port) {
+sockaddr_storage UdpConnection::get_address(const std::string &addr, in_port_t port) {
     sockaddr_storage address;
     sockaddr_in* addr4 = (sockaddr_in*) &address;
     sockaddr_in6* addr6 = (sockaddr_in6*) &address;
@@ -106,7 +106,7 @@ sockaddr_storage UdpConnection::getAddress(const std::string& addr, in_port_t po
     return address;
 }
 
-std::string UdpConnection::addressStr(sockaddr_storage& address) {
+std::string UdpConnection::address_to_str(const sockaddr_storage &address) {
     char* addr[200];
     bool ipv4 = address.ss_family == AF_INET;
 
@@ -130,7 +130,7 @@ std::string UdpConnection::addressStr(sockaddr_storage& address) {
     return ss.str();
 }
 
-void UdpConnection::setAddrPort(sockaddr_storage& address, in_port_t port) {
+void UdpConnection::set_address_port(sockaddr_storage &address, in_port_t port) {
     bool ipv4 = address.ss_family == AF_INET;
 
     if(ipv4) {
