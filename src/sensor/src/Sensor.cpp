@@ -48,14 +48,14 @@ void Sensor::send_request_msg() {
     }
 }
 
-void Sensor::receive_cc_config_msg(uint8_t *buf, size_t bufSize) {
+bool Sensor::receive_cc_config_msg(uint8_t *buf, size_t bufSize) {
     size_t bytes_read;
 
     try {
         con_recv.receive(buf, bufSize, bytes_read);
     } catch (const std::runtime_error& e) {
         logError() << e.what();
-        return;
+        return false;
     }
 
     logDebug() << "Received buffer size " << bytes_read;
@@ -76,6 +76,7 @@ void Sensor::receive_cc_config_msg(uint8_t *buf, size_t bufSize) {
             log() << "Message: " << configBlock->toString();
         }
     }
+    return true;
 }
 
 
@@ -86,4 +87,12 @@ void Sensor::reload_config(in_port_t port) {
 void Sensor::close_connection() {
     con_send.close_socket();
     con_recv.close_socket();
+}
+
+void Sensor::unset_connection_timeout() {
+    con_recv.unset_connection_timeout();
+}
+
+void Sensor::set_connection_timeout(long int sec, long int microsec) {
+    con_recv.set_connection_timeout(sec, microsec);
 }
