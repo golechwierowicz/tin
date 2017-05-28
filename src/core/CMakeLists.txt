@@ -1,12 +1,14 @@
 cmake_minimum_required(VERSION 3.7)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1z")
 
 set(SHARED_LIB_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/inc)
 set(SHARED_LIB_INCLUDE_DIR ${SHARED_LIB_INCLUDE_DIR} PARENT_SCOPE)
 
 if (NOT TARGET core) # run once
-    include_directories(${SHARED_LIB_INCLUDE_DIR})
+    find_package(Boost COMPONENTS thread system REQUIRED)
+
+    include_directories(${SHARED_LIB_INCLUDE_DIR} ${Boost_INCLUDE_DIRS})
     set(SOURCE_FILES
             inc/Logger.h
             src/Serializer.cpp inc/Serializer.h
@@ -26,6 +28,7 @@ if (NOT TARGET core) # run once
             src/blocks/CentralServerFireAlert.cpp inc/blocks/CentralServerFireAlert.h
             src/blocks/BlockType.cpp)
     add_library(core STATIC ${SOURCE_FILES})
+    target_link_libraries(core ${Boost_LIBRARIES})
 
     # testing
     enable_testing()
