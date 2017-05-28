@@ -2,7 +2,7 @@
 
 #include <thread>
 #include <atomic>
-#include <shared_mutex>
+#include <boost/thread/shared_mutex.hpp>
 #include <chrono>
 #include "CentralConfig.h"
 #include "UdpConnection.h"
@@ -13,10 +13,10 @@
  */
 class Central {
     CentralConfig config;
-    std::shared_mutex config_lock;
+    boost::shared_mutex config_lock;
 
     UdpConnection connection;
-    std::shared_mutex connection_lock;
+    boost::shared_mutex connection_lock;
 
     std::thread listen_thread;
     std::thread alert_send_thread;
