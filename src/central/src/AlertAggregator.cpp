@@ -9,13 +9,11 @@ namespace {
 }
 
 void AlertAggregator::SensorSingleData::lock() {
-    //while (lock_flag.test_and_set(std::memory_order_acquire));
-    l.lock();
+    while (lock_flag.test_and_set(std::memory_order_acquire));
 }
 
 void AlertAggregator::SensorSingleData::unlock() {
-    //lock_flag.clear(std::memory_order_release);
-    l.unlock();
+    lock_flag.clear(std::memory_order_release);
 }
 
 bool AlertAggregator::SensorSingleData::should_be_removed() const {
