@@ -54,7 +54,7 @@ namespace {
 }
 
 BOOST_AUTO_TEST_CASE(check_synchronization_with_multiple_sensors) {
-    const size_t repeat_per_sensor = 50 * 1000 * 1000;
+    const size_t repeat_per_sensor = 5 * 1000 * 1000;
     const size_t sensor_duplication = 3;
 
     AlertAggregator aggregator;

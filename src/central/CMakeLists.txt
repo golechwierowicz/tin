@@ -16,11 +16,11 @@ find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
 set(TEST_FILES ${SOURCE_FILES}
-        test/AlertAggregator.test.cpp test/Central.test.cpp)
+        test/AlertAggregator.test.cpp test/module.test.cpp)
 add_executable(central_test ${TEST_FILES})
 target_link_libraries(central_test core pthread ${Boost_LIBRARIES})
 
 set(IT_TEST_FILES ${SOURCE_FILES}
-        it-test/Central.it-test.cpp it-test/AlertAggregator.it-test.cpp)
+        it-test/module.it-test.cpp it-test/AlertAggregator.it-test.cpp it-test/Central.it-test.cpp)
 add_executable(central_it_test ${IT_TEST_FILES})
 target_link_libraries(central_it_test core pthread ${Boost_LIBRARIES})

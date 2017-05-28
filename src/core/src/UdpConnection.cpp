@@ -31,14 +31,16 @@ void UdpConnection::bind_port(uint16_t port)  {
         raiseError("bind() failed");
     }
 
-    logDebug() << "UdpConnection: Socket bound";
+    this->port = port;
+    logDebug() << "UdpConnection[" << port << "]: Socket bound to " << port;
 }
 
 void UdpConnection::close_socket() {
     if(open) {
         open = false;
         close(socket_fd);
-        logDebug() << "UdpConnection: Socket closed";
+        logDebug() << "UdpConnection[" << port << "]: Socket closed";
+        port = 0;
     }
 }
 
@@ -47,6 +49,8 @@ UdpConnection::~UdpConnection() {
 }
 
 void UdpConnection::send_msg(const uint8_t *buffer, size_t len, sockaddr_storage address) {
+    logDebug() << "UdpConnection["<< port << "]: sending message (size=" << len << ")";
+
     ssize_t result;
     if (address.ss_family == AF_INET) {
         result = sendto(socket_fd, buffer, len, 0, (sockaddr*)&address, sizeof(sockaddr_in));
@@ -57,12 +61,12 @@ void UdpConnection::send_msg(const uint8_t *buffer, size_t len, sockaddr_storage
     if(result < 0) {
         raiseError("sendto() failed");
     } else {
-        logDebug() << "UdpConnection: Message sent to: " << address_to_str(address);
+        logDebug() << "UdpConnection[" << port << "]: Message sent to: " << address_to_str(address);
     }
 }
 
 sockaddr_storage UdpConnection::receive(uint8_t* buffer, size_t buffer_size, size_t& data_length) {
-    logDebug() << "UdpConnection: Waiting for message";
+    logDebug() << "UdpConnection[" << port << "]: Waiting for message";
 
     sockaddr_storage sender;
     socklen_t addrlen = sizeof(sender);
@@ -77,7 +81,7 @@ sockaddr_storage UdpConnection::receive(uint8_t* buffer, size_t buffer_size, siz
     if(value < 0) {
         raiseError("Message receive failed");
     } else {
-        logDebug() << "UdpConnection: Message received";
+        logDebug() << "UdpConnection[" << port << "]: Message received (data_length=" << value << ")";
         data_length = (size_t) value;
     }
 
