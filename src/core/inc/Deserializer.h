@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <memory>
 #include <limits>
+#include <cstring>
+#include "blocks/BlockType.h"
 
 class Deserializer {
 public:
@@ -13,7 +15,7 @@ public:
     };
 
 private:
-    uint8_t* buffer;
+    const uint8_t* buffer;
     uint32_t buffer_size;
     uint32_t buffer_position;
     uint32_t last_block = 0;
@@ -23,7 +25,7 @@ private:
     Deserializer& read(void* out_buffer, size_t size);
 
 public:
-    Deserializer(uint8_t* buffer, uint32_t buffer_size)
+    Deserializer(const uint8_t* buffer, uint32_t buffer_size)
             : buffer(buffer), buffer_size(buffer_size) {
         if(buffer_size < 8) {
             throw std::runtime_error("Buffer to small to contain a block");
@@ -31,7 +33,7 @@ public:
     }
 
     bool next_block();
-    uint32_t get_block_type() { return block_type; }
+    BlockType get_block_type() { return static_cast<BlockType>(block_type); }
 
     template <typename T>
     Deserializer& read(typename TypeTag<T>::type &value) {
@@ -94,6 +96,14 @@ inline Deserializer& Deserializer::read<int64_t>(Deserializer::TypeTag<int64_t>:
     uint64_t stored;
     read<uint64_t>(stored);
     memcpy(&value, &stored, sizeof(value));
+    return *this;
+}
+
+template <>
+inline Deserializer& Deserializer::read<bool>(Deserializer::TypeTag<bool>::type& value) {
+    uint8_t stored;
+    read<uint8_t>(stored);
+    value = stored != 0;
     return *this;
 }
 

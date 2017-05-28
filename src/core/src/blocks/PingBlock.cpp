@@ -4,14 +4,16 @@
 
 #include "blocks/PingBlock.h"
 
+using namespace std;
+
 void PingBlock::serialize(Serializer &serializer) {
     serializer
             .begin_block(type)
             .end_block();
 }
 
-void PingBlock::deserialize(Deserializer &deserializer) {
-    return;
+std::unique_ptr<PingBlock> PingBlock::deserialize(Deserializer &deserializer) {
+    return make_unique<PingBlock>();
 }
 
 std::string PingBlock::toString() {

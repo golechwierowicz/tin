@@ -1,13 +1,15 @@
 cmake_minimum_required(VERSION 3.7)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1z")
 
 set(SHARED_LIB_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/inc)
 set(SHARED_LIB_INCLUDE_DIR ${SHARED_LIB_INCLUDE_DIR} PARENT_SCOPE)
 
 if (NOT TARGET core) # run once
     find_package(Config++ REQUIRED)
-    include_directories(${SHARED_LIB_INCLUDE_DIR} ${CONFIG++_INCLUDE_DIR})
+    find_package(Boost COMPONENTS thread system REQUIRED)
+
+    include_directories(${SHARED_LIB_INCLUDE_DIR} ${Boost_INCLUDE_DIRS} ${CONFIG++_INCLUDE_DIR})
     set(SOURCE_FILES
             inc/Logger.h
             src/Serializer.cpp inc/Serializer.h
@@ -17,10 +19,18 @@ if (NOT TARGET core) # run once
             src/errorhandling.cpp inc/errorhandling.h
             src/blocks/BlockReader.cpp inc/blocks/BlockReader.h
             inc/blocks/AbstractBlock.h
+            inc/blocks/BlockType.h
             src/blocks/DebugBlock.cpp inc/blocks/DebugBlock.h
-            src/blocks/CntSensorConfigBlock.cpp inc/blocks/CntSensorConfigBlock.h src/blocks/RequestConfigBlock.cpp inc/blocks/RequestConfigBlock.h src/blocks/PingBlock.cpp inc/blocks/PingBlock.h src/blocks/SensorMeasurementBlock.cpp inc/blocks/SensorMeasurementBlock.h)
-
+            src/blocks/CntSensorConfigBlock.cpp inc/blocks/CntSensorConfigBlock.h
+            src/blocks/RequestConfigBlock.cpp inc/blocks/RequestConfigBlock.h
+            src/blocks/PingBlock.cpp inc/blocks/PingBlock.h
+            src/blocks/SensorMeasurementBlock.cpp inc/blocks/SensorMeasurementBlock.h
+            src/blocks/SensorCommonBlock.cpp inc/blocks/SensorCommonBlock.h
+            src/blocks/CentralServerHeartbeat.cpp inc/blocks/CentralServerHeartbeat.h
+            src/blocks/CentralServerFireAlert.cpp inc/blocks/CentralServerFireAlert.h
+            src/blocks/BlockType.cpp)
     add_library(core STATIC ${SOURCE_FILES})
+    target_link_libraries(core ${Boost_LIBRARIES})
 
     # testing
     enable_testing()
@@ -33,6 +43,7 @@ if (NOT TARGET core) # run once
             test/Deserializer.test.cpp
             test/BlockReader.test.cpp
             test/ConfigReader.test.cpp)
+
     add_executable(core_test ${TEST_FILES})
     target_link_libraries(core_test ${Boost_LIBRARIES} ${CONFIG++_LIBRARY})
     add_custom_command(TARGET core_test POST_BUILD

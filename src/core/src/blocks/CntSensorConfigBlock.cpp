@@ -2,6 +2,14 @@
 #include <iterator>
 #include "blocks/CntSensorConfigBlock.h"
 
+using namespace std;
+
+CntSensorConfigBlock::CntSensorConfigBlock(std::vector<std::string> central_ips, in_port_t port_id, std::string cnt_ip)
+        : AbstractBlock(BlockType::cnt_sensor_config),
+        central_ips(central_ips),
+        port_id(port_id),
+        cnt_ip(cnt_ip) {}
+
 void CntSensorConfigBlock::serialize(Serializer &serializer) {
     serializer.begin_block(type)
             .write<uint16_t>(port_id)
@@ -13,18 +21,24 @@ void CntSensorConfigBlock::serialize(Serializer &serializer) {
     serializer.end_block();
 }
 
-void CntSensorConfigBlock::deserialize(Deserializer &deserializer) {
+std::unique_ptr<CntSensorConfigBlock> CntSensorConfigBlock::deserialize(Deserializer &deserializer) {
+    std::vector<std::string> central_ips;
+    in_port_t port_id;
+    std::string cnt_ip;
+
     size_t size;
     deserializer
             .read<uint16_t>(port_id)
             .read<std::string>(cnt_ip)
             .read<uint64_t>(size);
-    central_ips.clear();
+
+    std::string s;
     for(size_t i = 0; i < size; i++) {
-        std::string s;
         deserializer.read<std::string>(s);
         central_ips.push_back(s);
     }
+
+    return make_unique<CntSensorConfigBlock>(move(central_ips), port_id, move(cnt_ip));
 }
 
 std::string CntSensorConfigBlock::toString() {
@@ -43,11 +57,3 @@ std::string CntSensorConfigBlock::toString() {
 
     return ss.str();
 }
-
-CntSensorConfigBlock::CntSensorConfigBlock(std::vector<std::string> central_ips,
-                                           in_port_t port_id,
-                                           std::string cnt_ip) :
-        AbstractBlock(bt_cnt_sensor_config),
-        central_ips(central_ips),
-        port_id(port_id),
-        cnt_ip(cnt_ip) {}

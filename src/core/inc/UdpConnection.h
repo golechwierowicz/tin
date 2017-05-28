@@ -22,13 +22,13 @@ public:
     void close_socket();
 
     void bind_port(uint16_t port);
-    void send_msg(uint8_t* buffer, size_t len, sockaddr_storage address);
+    void send_msg(const uint8_t* buffer, size_t len, sockaddr_storage address);
     sockaddr_storage receive(uint8_t* buffer, size_t buffer_size, size_t& data_length);
 
 
-    static sockaddr_storage getAddress(const std::string& addr, in_port_t port);
-    static std::string addressStr(sockaddr_storage& address);
-    static void setAddrPort(sockaddr_storage& address, in_port_t port);
+    static sockaddr_storage get_address(const std::string &addr, in_port_t port);
+    static std::string address_to_str(const sockaddr_storage &address);
+    static void set_address_port(sockaddr_storage &address, in_port_t port);
 };
 
 
