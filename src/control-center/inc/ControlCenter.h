@@ -33,6 +33,9 @@ public:
     void recv_sensor_request_msg();
     void close_connection();
     void init_connection();
+    void broadcast_sensors();
+
+    void send_sensor_config_block(const sockaddr_storage &addr);
 };
 
 #endif // _CONTROL_CENTER_H_

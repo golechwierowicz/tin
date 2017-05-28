@@ -33,7 +33,7 @@ SensorConfig* Sensor::init_config() {
 
 void Sensor::send_request_msg() {
     serializer.clear();
-    RequestConfigBlock configBlock(port);
+    RequestConfigBlock configBlock(port, config->getId());
     configBlock.serialize(serializer);
 
     uint16_t size;

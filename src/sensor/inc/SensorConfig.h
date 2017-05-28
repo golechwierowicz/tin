@@ -27,7 +27,7 @@ public:
     SensorConfig(SensorType type, in_port_t cc_port, const std::string& cc_addr) :
         type(type),
         cc_port(cc_port),
-        cc_addr(cc_addr) {}
+        cc_addr(cc_addr) { setId(666);}
 
     uint32_t getId() const { return id; }
     void setId(uint32_t id) { SensorConfig::id = id; }

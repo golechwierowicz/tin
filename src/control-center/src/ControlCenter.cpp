@@ -39,17 +39,9 @@ void ControlCenter::recv_sensor_request_msg() {
                 auto requestConfigBlock = reinterpret_cast<RequestConfigBlock*>(block.get());
                 UdpConnection::set_address_port(addr, requestConfigBlock->getPort());
                 log() << UdpConnection::address_to_str(addr);
-
                 log() << "Received: " << requestConfigBlock->toString();
-
-                serializer.clear();
-                CntSensorConfigBlock sensorConfigBlock(get_central_ips(), port, ip);
-                sensorConfigBlock.serialize(serializer);
-
-                uint16_t bufSize;
-                uint8_t* buf = serializer.get_buffer(bufSize);
-                connection.send_msg(buf, bufSize, addr);
-                //update_sensor_list(addr);
+                send_sensor_config_block(addr);
+                update_sensor_list(requestConfigBlock->getSensor_id(), addr);
             } else {
                 log() << "Received: " << block->toString();
             }
@@ -59,6 +51,16 @@ void ControlCenter::recv_sensor_request_msg() {
         return;
     }
 }
+
+void ControlCenter::send_sensor_config_block(const sockaddr_storage &addr) {
+    serializer.clear();
+    CntSensorConfigBlock sensorConfigBlock(get_central_ips(), port, ip);
+    sensorConfigBlock.serialize(serializer);
+
+    uint16_t bufSize;
+    uint8_t* buf = serializer.get_buffer(bufSize);
+    connection.send_msg(buf, bufSize, addr);
+}                                                                                                                                                                                                                                                                                                                                                                                       
 
 void ControlCenter::close_connection() {
     connection.close_socket();
@@ -70,5 +72,11 @@ void ControlCenter::update_sensor_list(uint32_t sensor_id, sockaddr_storage addr
     if (sensors_iterator == sensors.end()) {
         sensors.insert(std::pair<uint32_t, sockaddr_storage>(sensor_id, addr));
         log() << "Control Center has registered a new sensor";
+    }
+}
+
+void ControlCenter::broadcast_sensors() {
+    for (auto sensor : sensors) {
+        send_sensor_config_block(sensor.second);
     }
 }
