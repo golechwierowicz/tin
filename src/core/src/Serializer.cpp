@@ -1,11 +1,12 @@
 #include <cstring>
 #include <string>
+#include <blocks/AbstractBlock.h>
 #include "Serializer.h"
 
-Serializer& Serializer::begin_block(uint32_t type) {
+Serializer& Serializer::begin_block(BlockType type) {
     assert(!in_block);
     in_block = true;
-    write<uint32_t>(type);
+    write<uint32_t>(static_cast<uint32_t>(type));
     write<int32_t>(0);
     return *this;
 }

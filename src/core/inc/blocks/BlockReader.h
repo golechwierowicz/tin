@@ -1,21 +1,19 @@
 #ifndef TIN_BLOCKREADER_H
 #define TIN_BLOCKREADER_H
 
-
 #include <cstdint>
 #include <cstdlib>
 #include <vector>
+#include <memory>
 #include "AbstractBlock.h"
 
 class BlockReader {
-    uint8_t *message_buffer;
+    const uint8_t *message_buffer;
     size_t message_size;
 public:
-    std::vector<AbstractBlock*> blocks;
+    std::vector<std::unique_ptr<AbstractBlock>> blocks;
 
-    BlockReader(uint8_t *message_buffer, size_t message_size);
-    ~BlockReader();
-
+    BlockReader(const uint8_t *message_buffer, size_t message_size);
 };
 
 

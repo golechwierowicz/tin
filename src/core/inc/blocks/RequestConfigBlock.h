@@ -9,21 +9,19 @@
 #include "AbstractBlock.h"
 #include <sstream>
 #include <netinet/in.h>
+#include <memory>
 
 class RequestConfigBlock : public AbstractBlock {
-private:
     in_port_t port;
-public:
-    in_port_t getPort() const;
-
-    void setPort(in_port_t port);
 
 public:
-    RequestConfigBlock(in_port_t port = 0) : AbstractBlock(bt_request_config), port(port) {}
+    RequestConfigBlock(in_port_t port) : AbstractBlock(BlockType::request_config), port(port) {}
 
     void serialize(Serializer& serializer);
-    void deserialize(Deserializer& deserializer);
+    static std::unique_ptr<RequestConfigBlock> deserialize(Deserializer& deserializer);
     std::string toString();
+
+    in_port_t getPort() const;
 };
 
 

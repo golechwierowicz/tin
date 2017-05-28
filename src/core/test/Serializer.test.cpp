@@ -14,7 +14,7 @@ BOOST_AUTO_TEST_CASE(buffer_size_should_not_be_0_if_a_block_was_written) {
     Serializer serializer;
     uint16_t size;
 
-    serializer.begin_block(0)
+    serializer.begin_block(BlockType::sensor_common)
             .end_block();
     serializer.get_buffer(size);
 
@@ -25,7 +25,7 @@ BOOST_AUTO_TEST_CASE(buffer_contents_should_be_correct) {
     Serializer serializer;
     uint16_t size;
 
-    serializer.begin_block(1)
+    serializer.begin_block(BlockType::sensor_common)
             .write<int8_t>(0x11)
             .write<int16_t>(0x1122)
             .write<int32_t>(0x11223344)
@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(buffer_overflow_should_throw_exception) {
 
     BOOST_CHECK_THROW(
             {
-                serializer.begin_block(1);
+                serializer.begin_block(BlockType::sensor_common);
                 while (true) {
                     serializer.write<uint8_t>(0);
                 }
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(buffer_size_should_omit_incomplete_blocks) {
     Serializer serializer;
     uint16_t size;
 
-    serializer.begin_block(1);
+    serializer.begin_block(BlockType::sensor_common);
     serializer.get_buffer(size);
 
     BOOST_CHECK_EQUAL(size, 0);

@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include <cstring>
 #include <limits>
+#include "blocks/BlockType.h"
 
 class Serializer {
 public:
@@ -28,7 +29,7 @@ private:
     Serializer& write(const void* value, size_t size);
 
 public:
-    Serializer& begin_block(uint32_t type);
+    Serializer& begin_block(BlockType type);
     Serializer& end_block();
 
     template <typename T>
@@ -84,6 +85,11 @@ inline Serializer& Serializer::write<int32_t>(Serializer::TypeTag<int32_t>::type
     uint32_t storage;
     memcpy(&storage, &value, sizeof(value));
     return write<uint32_t>(storage);
+}
+
+template <>
+inline Serializer& Serializer::write<bool>(Serializer::TypeTag<bool>::type value) {
+    return write<uint8_t>(static_cast<uint8_t>(value ? 1 : 0));
 }
 
 template <>
