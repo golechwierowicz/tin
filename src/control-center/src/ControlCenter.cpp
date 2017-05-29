@@ -6,13 +6,18 @@
 #include <blocks/BlockReader.h>
 #include <blocks/RequestConfigBlock.h>
 
-ControlCenter::ControlCenter(Serializer serializer) : serializer(serializer) {
+ControlCenter::ControlCenter(Serializer serializer, const std::string& filepath) : serializer(serializer) {
+    cfg = new ConfigReader(filepath);
+    port = cfg->read_integer(CC_PORT_PATH);
+    ip = cfg->read_string(CC_IP_PATH);
     connection.open_socket();
     con_send.open_socket();
     init_connection();
 }
 
-ControlCenter::~ControlCenter() {}
+ControlCenter::~ControlCenter() {
+    delete cfg;
+}
 
 void ControlCenter::init_connection() {
     try {
@@ -23,9 +28,19 @@ void ControlCenter::init_connection() {
     }
 }
 
-std::vector<std::string> ControlCenter::get_central_ips() { // another dummy method, this should be hardcoded or read from config
-    std::vector<std::string> result; 
-    result.push_back("192.168.1.2");
+std::vector<std::string> ControlCenter::get_central_ips() { 
+    std::vector<std::string> ips; 
+    std::vector<std::string> ports;
+
+    int num_of_centrals = cfg->read_integer(CC_CENTRALS_SIZE);
+    ips = cfg->read_string_arr(CC_CENTRALS_IPS, num_of_centrals);
+    ports = cfg->read_string_arr(CC_CENTRALS_PORTS, num_of_centrals);
+
+    std::vector<std::string> result;
+
+    for(int i = 0; i < num_of_centrals; i++) 
+        result.push_back(ips[i] + ":" + ports[i]);
+    
     return result;
 }
 
@@ -43,7 +58,7 @@ void ControlCenter::recv_sensor_request_msg() {
                 send_sensor_config_block(addr);
                 update_sensor_list(requestConfigBlock->get_id(), addr);
             } else {
-                log() << "Received: " << block->toString();
+                logWarn() << "Received unexpected block: " << block->toString();
             }
         }
     } catch (const std::runtime_error& e) {
@@ -71,7 +86,7 @@ void ControlCenter::update_sensor_list(uint32_t sensor_id, sockaddr_storage addr
     auto sensors_iterator = sensors.find(sensor_id);
     if (sensors_iterator == sensors.end()) {
         sensors.insert(std::pair<uint32_t, sockaddr_storage>(sensor_id, addr));
-        log() << "Control Center has registered a new sensor";
+        log() << "Control Center has registered a new sensor with id: " + std::to_string(sensor_id);
     }
 }
 

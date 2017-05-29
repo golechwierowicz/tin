@@ -43,6 +43,16 @@ BOOST_AUTO_TEST_CASE(read_int) {
     delete cf;
 }
 
+BOOST_AUTO_TEST_CASE(read_arr) {
+    ConfigReader *cf;
+    BOOST_CHECK_NO_THROW((cf = new ConfigReader(filepath())));
+    std::vector<std::string> arr_read = cf->read_string_arr("sensor.sample_arr", 3);
+    BOOST_CHECK_EQUAL("x", arr_read[0]);
+    BOOST_CHECK_EQUAL("y", arr_read[1]);
+    BOOST_CHECK_EQUAL("z", arr_read[2]);
+    delete cf;
+}
+
 BOOST_AUTO_TEST_CASE(read_bool) {
     ConfigReader *cf;
     bool expected = false;
