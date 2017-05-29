@@ -16,14 +16,16 @@
 
 class Sensor {
 private:
+    static const int BUF_SIZE = 512;
     Serializer serializer;
     UdpConnection con_send;
     UdpConnection con_recv;
 
     SensorConfig* config;
     std::string ip_address;
-    in_port_t port = 4049;
+    in_port_t port;
     std::vector<std::string> central_ips;
+    uint8_t buf[BUF_SIZE];
 
     void init_recv_connection();
     void reload_config(in_port_t);
@@ -32,14 +34,16 @@ public:
     Sensor(Serializer serializer);
     ~Sensor();
 
-    // communication cc - sensor
     void send_request_msg();
-    bool receive_cc_config_msg(uint8_t *buf, size_t bufSize);
+    bool receive_cc_config_msg();
     void close_connection();
     void set_connection_timeout(long int sec, long int microsec);
     void unset_connection_timeout();
+    void run_send(uint8_t*, size_t);
+    void send_measurement(std::string central_ip, in_port_t port);
+    void broadcast_centrals();
 
-    SensorConfig* init_config(); // consider using smart ptr.........
+    SensorConfig* init_config();
 };
 
 #endif // _SENSOR_H

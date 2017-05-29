@@ -10,4 +10,4 @@ set(SOURCE_FILES src/main.cpp
         inc/SensorConfig.h
         )
 add_executable(sensor ${SOURCE_FILES})
-target_link_libraries(sensor core)
+target_link_libraries(sensor core pthread)
