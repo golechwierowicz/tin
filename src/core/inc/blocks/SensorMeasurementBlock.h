@@ -13,7 +13,9 @@ class SensorMeasurementBlock : public AbstractBlock{
     double read_value;
 
 public:
-    SensorMeasurementBlock(BlockType blockType, double readValue) : AbstractBlock(blockType){}
+    SensorMeasurementBlock(BlockType block_type, double read_value)
+            : AbstractBlock(block_type),
+              read_value(read_value) {}
 
     void serialize(Serializer&);
     static std::unique_ptr<SensorMeasurementBlock> deserialize(Deserializer& deserializer, BlockType block_type);

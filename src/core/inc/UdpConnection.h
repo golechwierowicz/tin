@@ -12,6 +12,7 @@ class UdpConnection {
 private:
     bool open = false;
     int socket_fd;
+    uint16_t port = 0;
 
 public:
     static const std::string LOCALHOST;
