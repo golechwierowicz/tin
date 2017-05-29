@@ -3,7 +3,7 @@
 #include <iostream>
 
 namespace {
-    volatile Central *g_central;
+    Central * volatile g_central;
 }
 
 void sigint_handler(int signum) {

@@ -30,7 +30,7 @@ public:
     explicit Central(const CentralConfig &config);
 
     void reload_config(const CentralConfig &config);
-    void shutdown() volatile;
+    void shutdown();
 
     void run();
 

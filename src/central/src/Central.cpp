@@ -40,7 +40,7 @@ void Central::reload_config(const CentralConfig &config) {
     }
 }
 
-void Central::shutdown() volatile {
+void Central::shutdown() {
     logInfo() << "Central: received shutdown";
     running.store(false, memory_order_release);
 }
