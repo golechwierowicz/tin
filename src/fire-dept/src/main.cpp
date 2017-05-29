@@ -2,6 +2,8 @@
 #include <Deserializer.h>
 #include <blocks/AbstractBlock.h>
 #include <blocks/BlockReader.h>
+#include <blocks/CentralServerFireAlert.h>
+#include <blocks/CentralServerHeartbeat.h>
 #include "Logger.h"
 
 #define BUFFER_SIZE 2048
@@ -11,6 +13,13 @@ void handle_message(uint8_t* message_buffer, size_t message_size) {
 
     for(auto& block : reader.blocks) {
         log() << "Message: " << block->toString();
+        if (block->type == BlockType::central_server_fire_alert) {
+            auto fireAlertBlock = reinterpret_cast<CentralServerFireAlert*>(block.get());
+            log() << "Fire!!!: " << fireAlertBlock->toString();
+        } else if(block->type == BlockType::central_server_heartbeat) {
+            auto heartBeatBlock = reinterpret_cast<CentralServerHeartbeat*>(block.get());
+            log() << "Heartbeat: " << heartBeatBlock->toString();
+        }
     }
 }
 
