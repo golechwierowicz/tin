@@ -22,3 +22,6 @@ add_bytes(b, 0, 0, 0, 4) # alerts count
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.sendto(b, ('127.0.0.1', 4099))
+
+sock6 = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+sock6.sendto(b, ('::', 4099))
