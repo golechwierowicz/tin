@@ -10,7 +10,6 @@ static const int BUF_SIZE = 2048;
 static const int NUMBER_OF_ATTEMPTS = 5;
 using namespace std;
 volatile bool quit = false;
-uint8_t buf[BUF_SIZE];
 
 Serializer serializer;
 Sensor sensor(serializer);
@@ -52,5 +51,6 @@ int main() {
         sensor.broadcast_centrals();
         this_thread::sleep_for(std::chrono::seconds(2));
     }
+    receiving_thread.join();
     exit(0);
 }

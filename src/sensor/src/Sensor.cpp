@@ -7,6 +7,7 @@
 #include <blocks/RequestConfigBlock.h>
 #include <chrono>
 #include <thread>
+#include <blocks/SensorCommonBlock.h>
 
 Sensor::Sensor(Serializer serializer) :
         serializer(serializer),
@@ -106,14 +107,17 @@ void Sensor::send_measurement(std::string central_ip, in_port_t port) {
 
     serializer.clear();
     // make the value being sent random
-    SensorMeasurementBlock block(BlockType::temp_read, 59.8);
-    block.serialize(serializer);
+    SensorCommonBlock commonblock(static_cast<uint64_t>(time(nullptr)), 55, 67, true);
+    commonblock.serialize(serializer);
+    SensorMeasurementBlock measurementBlock(BlockType::temp_read, 59.8);
+    measurementBlock.serialize(serializer);
 
     uint16_t size;
     uint8_t* buffer = serializer.get_buffer(size);
 
     try {
-        log() << "Sending: " << block.toString();
+        log() << "Sending: " << commonblock.toString();
+        log() << "Sending: " << measurementBlock.toString();
         // TODO change port - extract from address string
         auto addr = UdpConnection::get_address(central_ip, port);
         con_send.send_msg(buffer, size, addr);
@@ -128,6 +132,7 @@ void Sensor::broadcast_centrals()
     for (auto central : central_ips) {
         std::string ip(central.substr(0, central.find(delimiter)));
         std::string port(central.substr(ip.size() + 1, central.size() - ip.size()));
+
         send_measurement(ip, static_cast<uint16_t >(atoi(port.c_str())));
         std::this_thread::sleep_for(std::chrono::seconds(2));
     }

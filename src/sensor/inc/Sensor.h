@@ -39,9 +39,9 @@ public:
     void close_connection();
     void set_connection_timeout(long int sec, long int microsec);
     void unset_connection_timeout();
-    void run_send(uint8_t*, size_t);
     void send_measurement(std::string central_ip, in_port_t port);
     void broadcast_centrals();
+    void send_common_block(std::string central_ip, in_port_t port);
 
     SensorConfig* init_config();
 };
