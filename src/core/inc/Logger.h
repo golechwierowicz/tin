@@ -34,7 +34,7 @@ public:
     Logger(const Logger& other) : level(other.level) {}
 
     template<typename T>
-    Logger &operator<<(T &data) {
+    Logger &operator<<(T data) {
         ss << data;
         return *this;
     }

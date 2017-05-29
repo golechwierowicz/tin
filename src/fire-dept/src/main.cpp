@@ -2,8 +2,7 @@
 #include <Deserializer.h>
 #include <blocks/AbstractBlock.h>
 #include <blocks/BlockReader.h>
-#include <blocks/CentralServerFireAlert.h>
-#include <blocks/CentralServerHeartbeat.h>
+#include <FireDeptConfig.h>
 #include "Logger.h"
 
 #define BUFFER_SIZE 2048
@@ -13,17 +12,16 @@ void handle_message(uint8_t* message_buffer, size_t message_size) {
 
     for(auto& block : reader.blocks) {
         log() << "Message: " << block->toString();
-        if (block->type == BlockType::central_server_fire_alert) {
-            auto fireAlertBlock = reinterpret_cast<CentralServerFireAlert*>(block.get());
-            log() << "Fire!!!: " << fireAlertBlock->toString();
-        } else if(block->type == BlockType::central_server_heartbeat) {
-            auto heartBeatBlock = reinterpret_cast<CentralServerHeartbeat*>(block.get());
-            log() << "Heartbeat: " << heartBeatBlock->toString();
-        }
     }
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+    FireDeptConfig config;
+    if(argc == 2) {
+        config = FireDeptConfig(argv[1]);
+        log() << "Reading config from file";
+    }
+
     log() << "Starting Fire Department Server";
 
     bool running = true;
@@ -32,7 +30,7 @@ int main() {
 
     try {
         server.open_socket();
-        server.bind_port(4099);
+        server.bind_port(config.getPort());
     } catch (const std::runtime_error& e) {
         logError() << e.what();
         exit(1);
@@ -41,7 +39,7 @@ int main() {
     uint8_t message_buffer[BUFFER_SIZE];
     size_t message_size;
 
-    log() << "Fire Department Server listening";
+    log() << "Fire Department Server listening on: " << config.getPort();
 
     while (running) {
         try {
