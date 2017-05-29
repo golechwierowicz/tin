@@ -30,11 +30,18 @@ private:
     LogLevel level;
 
 public:
-    Logger(LogLevel level) : level(level) {}
-    Logger(const Logger& other) : level(other.level) {}
+    Logger(LogLevel level) : level(level) {
+        auto t = std::time(nullptr);
+        auto tm = *std::localtime(&t);
+
+        ss << level_description(level)
+           << std::put_time(&tm, "%d.%m.%Y %H:%M:%S")
+           << " | ";
+    }
+    Logger(const Logger& other) : ss(other.ss.str()), level(other.level) {}
 
     template<typename T>
-    Logger &operator<<(T &data) {
+    Logger &operator<<(const T &data) {
         ss << data;
         return *this;
     }
@@ -45,15 +52,9 @@ public:
     }
 
     ~Logger() {
-        auto t = std::time(nullptr);
-        auto tm = *std::localtime(&t);
-
+        ss << std::endl;
         auto stream = level == ll_error ? &std::cerr : &std::cout;
-        *stream << level_description(level)
-                << std::put_time(&tm, "%d.%m.%Y %H:%M:%S")
-                << " | "
-                << ss.str()
-                << std::endl;
+        *stream << ss.str();
     }
 };
 

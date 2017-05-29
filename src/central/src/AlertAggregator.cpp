@@ -22,7 +22,7 @@ bool AlertAggregator::SensorSingleData::should_be_removed() const {
 }
 
 AlertAggregator::SensorSingleDataLock::SensorSingleDataLock(AlertAggregator::SensorSingleData &data) : data(data) {
-        data.lock();
+    data.lock();
 }
 
 AlertAggregator::SensorSingleDataLock::~SensorSingleDataLock() {
@@ -59,9 +59,17 @@ void AlertAggregator::insert(const SensorCommonBlock &common, const SensorMeasur
     if (it == aggregated_data.end()) {
         lockUpdate.unlock();
         boost::unique_lock<boost::shared_mutex> lockInsert(aggregated_data_lock);
-        aggregated_data[key] = SensorSingleData(common.get_latitude(), common.get_longitude(), common.get_timestamp());
+        it = aggregated_data.find(key);
+        if (it == aggregated_data.end()) {
+            aggregated_data[key] = SensorSingleData(
+                    common.get_latitude(),
+                    common.get_longitude(),
+                    common.get_timestamp()
+            );
+        } else {
+            update_data(it->second, common);
+        }
     } else {
-        SensorSingleDataLock data_lock(it->second);
         update_data(it->second, common);
     }
 }
@@ -117,6 +125,8 @@ bool AlertAggregator::should_insert(const SensorMeasurementBlock &block) const {
 void AlertAggregator::update_data(AlertAggregator::SensorSingleData &data, const SensorCommonBlock &common) {
     assert(data.latitude == common.get_latitude());
     assert(data.longitude == common.get_longitude());
+
+    SensorSingleDataLock data_lock(data);
 
     ++data.alert_count;
     data.last_timestamp = common.get_timestamp();

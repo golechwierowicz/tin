@@ -35,7 +35,8 @@ public:
     void run();
 
 private:
-    void listen();
+    void run_send_heartbeats();
+    void run_listen();
     void run_sending_alerts();
 
     void handle_block(const SensorCommonBlock &common, const std::unique_ptr<AbstractBlock> &block);

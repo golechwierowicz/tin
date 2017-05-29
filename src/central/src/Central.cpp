@@ -7,8 +7,24 @@
 
 using namespace std;
 using placeholders::_1;
+using chrono::duration_cast;
 
 Central::Central(const CentralConfig &config) : config(config) {
+    logInfo() << "Central: constructor with config ["
+              << "id=" << config.id << "; "
+              << "port=" << config.port << "; "
+              << "heartbeat_interval_ms=" << config.heartbeat_interval_ms << "; "
+              << "alert_interval_ms=" << config.alert_interval_ms << "; "
+              << "fire_dept_ip=" << config.fire_dept_ip << "; "
+              << "fire_dept_port=" << config.fire_dept_port
+              << "]";
+
+    logDebug() << "Central: debug config read ["
+              << "get_heartbeat_interval=" << get_heartbeat_interval().count() << "ms; "
+              << "get_alert_interval=" << get_alert_interval().count() << "ms; "
+              << "get_id=" << get_id() << "; "
+              << "get_fire_dept_address=" << UdpConnection::address_to_str(get_fire_dept_address())
+              << "]";
 }
 
 void Central::reload_config(const CentralConfig &config) {
@@ -25,31 +41,58 @@ void Central::reload_config(const CentralConfig &config) {
 }
 
 void Central::shutdown() volatile {
+    logInfo() << "Central: received shutdown";
     running.store(false, memory_order_release);
 }
 
 void Central::run() {
+    logInfo() << "Central: initializing";
+
     init_socket();
-    last_heartbeat = std::chrono::time_point<chrono::system_clock>::min();
+    last_heartbeat = chrono::system_clock::now() - get_heartbeat_interval();
     running.store(true, memory_order_release);
-    listen_thread = thread(bind(&Central::listen, this));
+    listen_thread = thread(bind(&Central::run_listen, this));
+    alert_send_thread = thread(bind(&Central::run_sending_alerts, this));
+
+    logInfo() << "Central: initialized";
+
+    run_send_heartbeats();
+
+    listen_thread.join();
+    alert_send_thread.join();
+}
+
+void Central::run_send_heartbeats() {
+    logInfo() << "Central: start sending heartbeats";
 
     while (running.load(memory_order_consume)) {
-        const auto since_last_heartbeat = std::chrono::system_clock::now() - last_heartbeat;
+        const auto since_last_heartbeat = chrono::_V2::system_clock::now() - last_heartbeat;
         const chrono::milliseconds heartbeat_interval = get_heartbeat_interval();
+
+        logDebug() << "Central: before send heartbeat: ["
+                   << "since_last_heartbeat=" << duration_cast<chrono::milliseconds>(since_last_heartbeat).count()
+                   << "ms; heartbeat_interval=" << duration_cast<chrono::milliseconds>(heartbeat_interval).count()
+                   << "ms]";
 
         if (since_last_heartbeat >= heartbeat_interval) {
             send_heartbeat();
+        } else {
+            logInfo() << "Central: ignoring heartbeat";
         }
 
         const auto wait_duration = heartbeat_interval - since_last_heartbeat;
+
+        logDebug() << "Central: waiting " << duration_cast<chrono::milliseconds>(wait_duration).count()
+                  << "ms for next heartbeat";
         this_thread::sleep_for(wait_duration);
     }
 
-    listen_thread.join();
+    logInfo() << "Central: stop sending heartbeats";
 }
 
-void Central::listen() {
+void Central::run_listen() {
+    logInfo() << "Central: start listening";
+
     const std::size_t buffer_size = 512;
     uint8_t buffer[buffer_size];
 
@@ -63,6 +106,8 @@ void Central::listen() {
         }
 
         try {
+            logDebug() << "Central: deserializing message from " << connection.address_to_str(addr);
+
             const auto blocks = move(BlockReader(buffer, bytes_read).blocks);
             const auto common = find_if(blocks.begin(), blocks.end(),
                     bind(equal_to<BlockType>(), std::bind(&AbstractBlock::type, _1), BlockType::sensor_common)
@@ -76,31 +121,45 @@ void Central::listen() {
             }
 
         } catch (const std::exception &e) {
-            logError() << "Failed to parse message from " << connection.address_to_str(addr) << ": " << e.what();
+            logError() << "Central: Failed to parse message from "
+                       << connection.address_to_str(addr) << ": " << e.what();
         } catch (...) {
-            logError() << "Unknown error occurred while parsing message from " << connection.address_to_str(addr);
+            logError() << "Central: Unknown error occurred while parsing message from "
+                       << connection.address_to_str(addr);
         }
     }
+
+    logInfo() << "Central: stop listening";
 }
 
 void Central::run_sending_alerts() {
+    logInfo() << "Central: start sending alerts";
+
     Serializer serializer;
 
     while (running.load(memory_order_consume)) {
         auto alerts = alert_aggregator.extractAlerts();
         if (!alerts.empty()) {
+            logDebug() << "Central: sending " << alerts.size() << " alerts";
+
             serializer.clear();
-            for_each(alerts.begin(), alerts.end(), bind(&AbstractBlock::serialize, _1, serializer));
+            for_each(alerts.begin(), alerts.end(), bind(&AbstractBlock::serialize, _1, ref(serializer)));
 
             uint16_t buffer_size;
             const uint8_t *buffer = serializer.get_buffer(buffer_size);
+
+            logDebug() << "Central: alerts buffer_size=" << buffer_size;
 
             boost::shared_lock<boost::shared_mutex> lock(connection_lock);
             connection.send_msg(buffer, buffer_size, get_fire_dept_address());
         }
 
-        this_thread::sleep_for(get_alert_interval());
+        const chrono::milliseconds wait_duration = get_alert_interval();
+        logDebug() << "Central: waiting " << wait_duration.count() << "ms for next alerts send";
+        this_thread::sleep_for(wait_duration);
     }
+
+    logInfo() << "Central: stop sending alerts";
 }
 
 void Central::handle_block(const SensorCommonBlock &common, const std::unique_ptr<AbstractBlock> &block) {
@@ -115,11 +174,13 @@ void Central::handle_block(const SensorCommonBlock &common, const std::unique_pt
             break;
 
         default:
-            logWarn() << "Central::handle_block: invalid block type: " << block->type;
+            logWarn() << "Central: handle_block: invalid block type: " << block->type;
     }
 }
 
 void Central::send_heartbeat() {
+    logDebug() << "Central: sending hearbeat";
+
     Serializer serializer;
     CentralServerHeartbeat(get_id()).serialize(serializer);
 
@@ -128,6 +189,7 @@ void Central::send_heartbeat() {
 
     boost::shared_lock<boost::shared_mutex> lock(connection_lock);
     connection.send_msg(buffer, buffer_size, get_fire_dept_address());
+    last_heartbeat = chrono::system_clock::now();
 }
 
 void Central::init_socket() {
@@ -137,15 +199,17 @@ void Central::init_socket() {
 
 void Central::init_socket_impl() {
     try {
+        logInfo() << "Central: initializing socket";
         connection.open_socket();
         connection.bind_port(config.port);
     } catch (const exception &e) {
-        logError() << "Exception occurred when initializing socket: " << e.what();
+        logError() << "Central: Exception occurred when initializing socket: " << e.what();
         throw;
     }
 }
 
 void Central::apply_port_change() {
+    logInfo() << "Central: apply_port_change";
     boost::unique_lock<boost::shared_mutex> lock(connection_lock);
 
     connection.close_socket();
@@ -154,7 +218,7 @@ void Central::apply_port_change() {
 
 std::chrono::milliseconds Central::get_heartbeat_interval() {
     boost::shared_lock<boost::shared_mutex> lock(config_lock);
-    return chrono::milliseconds(config.heartbeet_interval_ms);
+    return chrono::milliseconds(config.heartbeat_interval_ms);
 }
 
 std::chrono::milliseconds Central::get_alert_interval() {

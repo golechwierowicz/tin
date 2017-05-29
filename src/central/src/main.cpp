@@ -13,7 +13,7 @@ void sigint_handler(int signum) {
 
 int main(int argc, char *argv[]) {
     CentralConfig config;
-    config.heartbeet_interval_ms = 5000;
+    config.heartbeat_interval_ms = 5000;
     config.alert_interval_ms = 1000;
     config.fire_dept_ip = "127.0.0.1";
     config.fire_dept_port = 4099;
