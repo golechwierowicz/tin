@@ -28,9 +28,19 @@ void ControlCenter::init_connection() {
     }
 }
 
-std::vector<std::string> ControlCenter::get_central_ips() { // another dummy method, this should be hardcoded or read from config
-    std::vector<std::string> result; 
-    result.push_back("192.168.1.2");
+std::vector<std::string> ControlCenter::get_central_ips() { 
+    std::vector<std::string> ips; 
+    std::vector<std::string> ports;
+
+    int num_of_centrals = cfg->read_integer(CC_CENTRALS_SIZE);
+    ips = cfg->read_string_arr(CC_CENTRALS_IPS, num_of_centrals);
+    ports = cfg->read_string_arr(CC_CENTRALS_PORTS, num_of_centrals);
+
+    std::vector<std::string> result;
+
+    for(int i = 0; i < num_of_centrals; i++) 
+        result.push_back(ips[i] + ":" + ports[i]);
+    
     return result;
 }
 
@@ -48,7 +58,7 @@ void ControlCenter::recv_sensor_request_msg() {
                 send_sensor_config_block(addr);
                 update_sensor_list(requestConfigBlock->get_id(), addr);
             } else {
-                log() << "Received: " << block->toString();
+                logWarn() << "Received unexpected block: " << block->toString();
             }
         }
     } catch (const std::runtime_error& e) {

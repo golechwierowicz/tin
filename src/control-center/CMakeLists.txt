@@ -10,4 +10,4 @@ set(SOURCE_FILES
         src/ControlCenter.cpp inc/ControlCenter.h
         )
 add_executable(control-center ${SOURCE_FILES})
-target_link_libraries(control-center core ${CONFIG++_LIBRARY})
+target_link_libraries(control-center core pthread ${CONFIG++_LIBRARY})

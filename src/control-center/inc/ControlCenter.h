@@ -20,6 +20,9 @@ class ControlCenter {
 private:
     const std::string CC_PORT_PATH = "cc.port";
     const std::string CC_IP_PATH = "cc.ip";
+    const std::string CC_CENTRALS_SIZE = "cc.centrals.size";
+    const std::string CC_CENTRALS_IPS = "cc.centrals.ips";
+    const std::string CC_CENTRALS_PORTS = "cc.centrals.ports";
 
     in_port_t port;
     std::string ip;
