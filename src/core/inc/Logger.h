@@ -41,13 +41,8 @@ public:
     Logger(const Logger& other) : ss(other.ss.str()), level(other.level) {}
 
     template<typename T>
-    Logger &operator<<(const T &data) {
+    Logger &operator<<(T data) {
         ss << data;
-        return *this;
-    }
-
-    Logger &operator<<(std::string msg) {
-        ss << msg;
         return *this;
     }
 
