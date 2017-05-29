@@ -31,10 +31,10 @@ std::string RequestConfigBlock::toString() {
     return ss.str();
 }
 
-in_port_t RequestConfigBlock::getPort() const {
+in_port_t RequestConfigBlock::get_port() const {
     return port;
 }
 
-uint32_t RequestConfigBlock::getSensor_id() const {
+uint32_t RequestConfigBlock::get_id() const {
     return sensor_id;
 }

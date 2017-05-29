@@ -10,7 +10,7 @@
 static const int BUF_SIZE = 2048;
 static const int NUMBER_OF_ATTEMPTS = 5;
 using namespace std;
-bool quit = false;
+volatile bool quit = false;
 
 Serializer serializer;
 Sensor sensor(serializer);

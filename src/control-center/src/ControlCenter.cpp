@@ -37,11 +37,11 @@ void ControlCenter::recv_sensor_request_msg() {
         for (auto& block : reader.blocks) {
             if (block->type == BlockType::request_config) {
                 auto requestConfigBlock = reinterpret_cast<RequestConfigBlock*>(block.get());
-                UdpConnection::set_address_port(addr, requestConfigBlock->getPort());
+                UdpConnection::set_address_port(addr, requestConfigBlock->get_port());
                 log() << UdpConnection::address_to_str(addr);
                 log() << "Received: " << requestConfigBlock->toString();
                 send_sensor_config_block(addr);
-                update_sensor_list(requestConfigBlock->getSensor_id(), addr);
+                update_sensor_list(requestConfigBlock->get_id(), addr);
             } else {
                 log() << "Received: " << block->toString();
             }

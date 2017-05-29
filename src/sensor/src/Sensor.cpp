@@ -28,7 +28,7 @@ Sensor::~Sensor() {
 SensorConfig* Sensor::init_config() {
     // to be changed, needs to read conf from file/info sent by CC/any kind of init conf
     // dummy method, will need to implement reading conf form file
-    return new SensorConfig(st_temp_sensor, 4040, UdpConnection::LOCALHOST);
+    return new SensorConfig(st_temp_sensor, 1, 4040, UdpConnection::LOCALHOST);
 }
 
 void Sensor::send_request_msg() {

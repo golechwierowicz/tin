@@ -23,8 +23,8 @@ public:
     static std::unique_ptr<RequestConfigBlock> deserialize(Deserializer& deserializer);
     std::string toString();
 
-    in_port_t getPort() const;
-    uint32_t getSensor_id() const;
+    in_port_t get_port() const;
+    uint32_t get_id() const;
 };
 
 
