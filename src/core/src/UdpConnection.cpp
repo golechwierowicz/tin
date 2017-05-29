@@ -143,3 +143,30 @@ void UdpConnection::set_address_port(sockaddr_storage &address, in_port_t port) 
         ((sockaddr_in6*) &address)->sin6_port = htons(port);
     }
 }
+
+void UdpConnection::set_connection_timeout(long int sec, long int micro_sec) {
+    struct timeval t;
+    t.tv_sec = sec;
+    t.tv_usec = micro_sec;
+    if (setsockopt(socket_fd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&t, sizeof(struct timeval)) == -1) {
+        logError() << "Couldn't set timeout on socket to receive initial config: sensor powring off";
+        exit(-1);
+    }
+    else {
+        logDebug() << "set socket timeout\n";
+    }
+}
+
+void UdpConnection::unset_connection_timeout() {
+    // doc says: "If the timeout is set to zero (the default) then the operation will never timeout."
+    struct timeval t;
+    t.tv_sec = 0;
+    t.tv_usec = 0;
+    if (setsockopt(socket_fd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&t, sizeof(struct timeval)) == -1) {
+        logError() << "Couldn't unsetset timeout on socket after receiving initial config: sensor powring off";
+        exit(-1);
+    }
+    else {
+        logDebug() << "unset socket timeout\n";
+    }
+}

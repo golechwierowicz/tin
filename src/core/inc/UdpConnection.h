@@ -25,7 +25,8 @@ public:
     void bind_port(uint16_t port);
     void send_msg(const uint8_t* buffer, size_t len, sockaddr_storage address);
     sockaddr_storage receive(uint8_t* buffer, size_t buffer_size, size_t& data_length);
-
+    void set_connection_timeout(long int sec, long int micro_sec);
+    void unset_connection_timeout();
 
     static sockaddr_storage get_address(const std::string &addr, in_port_t port);
     static std::string address_to_str(const sockaddr_storage &address);

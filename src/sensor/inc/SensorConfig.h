@@ -24,10 +24,11 @@ private:
     const std::string& cc_addr;
 
 public:
-    SensorConfig(SensorType type, in_port_t cc_port, const std::string& cc_addr) :
+    SensorConfig(SensorType type, uint32_t id, in_port_t cc_port, const std::string& cc_addr) :
         type(type),
         cc_port(cc_port),
-        cc_addr(cc_addr) {}
+        cc_addr(cc_addr),
+        id(id) { }
 
     uint32_t getId() const { return id; }
     void setId(uint32_t id) { SensorConfig::id = id; }

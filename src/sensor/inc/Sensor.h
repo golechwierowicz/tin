@@ -27,14 +27,17 @@ private:
 
     void init_recv_connection();
     void reload_config(in_port_t);
+
 public:
     Sensor(Serializer serializer);
     ~Sensor();
 
     // communication cc - sensor
     void send_request_msg();
-    void receive_cc_config_msg(uint8_t *buf, size_t bufSize);
+    bool receive_cc_config_msg(uint8_t *buf, size_t bufSize);
     void close_connection();
+    void set_connection_timeout(long int sec, long int microsec);
+    void unset_connection_timeout();
 
     SensorConfig* init_config(); // consider using smart ptr.........
 };
