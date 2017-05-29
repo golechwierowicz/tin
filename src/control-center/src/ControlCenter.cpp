@@ -6,13 +6,18 @@
 #include <blocks/BlockReader.h>
 #include <blocks/RequestConfigBlock.h>
 
-ControlCenter::ControlCenter(Serializer serializer) : serializer(serializer) {
+ControlCenter::ControlCenter(Serializer serializer, const std::string& filepath) : serializer(serializer) {
+    cfg = new ConfigReader(filepath);
+    port = cfg->read_integer(CC_PORT_PATH);
+    ip = cfg->read_string(CC_IP_PATH);
     connection.open_socket();
     con_send.open_socket();
     init_connection();
 }
 
-ControlCenter::~ControlCenter() {}
+ControlCenter::~ControlCenter() {
+    delete cfg;
+}
 
 void ControlCenter::init_connection() {
     try {
@@ -71,7 +76,7 @@ void ControlCenter::update_sensor_list(uint32_t sensor_id, sockaddr_storage addr
     auto sensors_iterator = sensors.find(sensor_id);
     if (sensors_iterator == sensors.end()) {
         sensors.insert(std::pair<uint32_t, sockaddr_storage>(sensor_id, addr));
-        log() << "Control Center has registered a new sensor";
+        log() << "Control Center has registered a new sensor with id: " + std::to_string(sensor_id);
     }
 }
 

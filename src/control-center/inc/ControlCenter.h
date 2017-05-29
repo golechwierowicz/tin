@@ -12,13 +12,18 @@ static const int BUF_SIZE = 512;
 
 #include "Serializer.h"
 #include <vector>
+#include <ConfigReader.h>
 #include <UdpConnection.h>
 #include <map>
 
 class ControlCenter {
 private:
-    in_port_t port = 4040;
-    std::string ip = "127.0.0.1";
+    const std::string CC_PORT_PATH = "cc.port";
+    const std::string CC_IP_PATH = "cc.ip";
+
+    in_port_t port;
+    std::string ip;
+    ConfigReader *cfg;
     uint8_t buf[BUF_SIZE];
     UdpConnection connection;
     UdpConnection con_send;
@@ -28,7 +33,7 @@ private:
     std::vector<std::string> get_central_ips();
     void update_sensor_list(uint32_t sensor_id, sockaddr_storage);
 public:
-    ControlCenter(Serializer serializer);
+    ControlCenter(Serializer serializer, const std::string& filepath);
     ~ControlCenter();
     void recv_sensor_request_msg();
     void close_connection();
