@@ -7,6 +7,7 @@
 
 #include <netinet/in.h>
 #include <string>
+#include <vector>
 
 enum SensorType {
     st_smoke_sensor = 2,
@@ -24,13 +25,15 @@ struct SensorConfig {
     const std::string DEFAULT_CC_IP = "sensor.cc_ip";
 
     uint32_t id;
-    SensorType type;
     in_port_t sensor_port;
     uint16_t longitude;
     uint16_t latitude;
+    SensorType type;
 
     in_port_t cc_port;
     std::string cc_addr;
+    
+    std::vector<std::string> central_ips;
 };
 
 #endif //TIN_CONFIG_H

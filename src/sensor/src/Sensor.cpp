@@ -21,6 +21,8 @@ Sensor::Sensor(Serializer serializer) :
     config.cc_port = config_reader.read_integer(config.DEFAULT_CC_PORT);
     config.cc_addr = config_reader.read_string(config.DEFAULT_CC_IP);
 
+    std::srand(std::time(0));
+
     con_send.open_socket();
     con_recv.open_socket();
     init_recv_connection();
@@ -69,24 +71,21 @@ bool Sensor::receive_cc_config_msg() {
     for(auto& block : reader.blocks) {
         if(block->type == BlockType::cnt_sensor_config) {
             auto configBlock = reinterpret_cast<CntSensorConfigBlock*>(block.get());
-
-            // TODO change add ip etc centrals jak sie przeniesie do configa
-            reload_config(configBlock->port_id);
-
-            central_ips.clear();
-            for(auto& cnt_ip : configBlock->central_ips) {
-                central_ips.push_back(cnt_ip);
-            }
-
+            reload_config(configBlock->cnt_ip, configBlock->port_id, configBlock->central_ips);
             log() << "Message: " << configBlock->toString();
         }
     }
     return true;
 }
 
-// TODO change
-void Sensor::reload_config(in_port_t port) {
-    config.sensor_port = port;
+void Sensor::reload_config(std::string& cc_ip, in_port_t cc_port, std::vector<std::string>& central_ips) {
+    config.cc_addr = cc_ip;
+    config.cc_port = cc_port;
+
+    config.central_ips.clear();
+    for(auto& cnt_ip : central_ips) {
+        config.central_ips.push_back(cnt_ip);
+    }
 }
 
 void Sensor::close_connection() {
@@ -104,12 +103,10 @@ void Sensor::set_connection_timeout(long int sec, long int microsec) {
 
 void Sensor::send_measurement(std::string central_ip, in_port_t port) {
     // TODO add locks on shared data
-
     serializer.clear();
-    // TODO make the value being sent random
-    SensorCommonBlock common_block(static_cast<uint64_t>(time(nullptr)), 55, 67, true);
+    SensorCommonBlock common_block(static_cast<uint64_t>(time(nullptr)), config.latitude, config.longitude, true);
     common_block.serialize(serializer);
-    SensorMeasurementBlock measurement_block(BlockType::temp_read, 59.8);
+    SensorMeasurementBlock measurement_block(BlockType(config.type), std::rand());
     measurement_block.serialize(serializer);
 
     uint16_t size;
@@ -125,10 +122,9 @@ void Sensor::send_measurement(std::string central_ip, in_port_t port) {
     }
 }
 
-void Sensor::broadcast_centrals()
-{
+void Sensor::broadcast_centrals() {
     std::string delimiter(":");
-    for (auto central : central_ips) {
+    for (auto central : config.central_ips) {
         std::string ip(central.substr(0, central.find(delimiter)));
         std::string port(central.substr(ip.size() + 1, central.size() - ip.size()));
 

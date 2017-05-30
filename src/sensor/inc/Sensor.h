@@ -24,12 +24,10 @@ private:
 
     SensorConfig config;
     ConfigReader config_reader;
-    // TODO move to config
-    std::vector<std::string> central_ips;
     uint8_t buf[BUF_SIZE];
 
     void init_recv_connection();
-    void reload_config(in_port_t);
+    void reload_config(std::string& cc_ip, in_port_t cc_port, std::vector<std::string>& central_ips);
 
 public:
     Sensor(Serializer serializer);
@@ -42,8 +40,6 @@ public:
     void unset_connection_timeout();
     void send_measurement(std::string central_ip, in_port_t port);
     void broadcast_centrals();
-
-    SensorConfig* init_config();
 };
 
 #endif // _SENSOR_H
