@@ -13,6 +13,7 @@
 #include <vector>
 #include <UdpConnection.h>
 #include <ConfigReader.h>
+#include <mutex>
 #include "SensorConfig.h"
 
 class Sensor {
@@ -25,6 +26,8 @@ private:
     SensorConfig config;
     ConfigReader config_reader;
     uint8_t buf[BUF_SIZE];
+
+    std::mutex mutex;
 
     void init_recv_connection();
     void reload_config(std::string& cc_ip, in_port_t cc_port, std::vector<std::string>& central_ips);

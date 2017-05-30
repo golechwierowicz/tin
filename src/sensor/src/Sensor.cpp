@@ -71,7 +71,9 @@ bool Sensor::receive_cc_config_msg() {
     for(auto& block : reader.blocks) {
         if(block->type == BlockType::cnt_sensor_config) {
             auto configBlock = reinterpret_cast<CntSensorConfigBlock*>(block.get());
+            mutex.lock();
             reload_config(configBlock->cnt_ip, configBlock->port_id, configBlock->central_ips);
+            mutex.unlock();
             log() << "Message: " << configBlock->toString();
         }
     }
@@ -102,7 +104,6 @@ void Sensor::set_connection_timeout(long int sec, long int microsec) {
 }
 
 void Sensor::send_measurement(std::string central_ip, in_port_t port) {
-    // TODO add locks on shared data
     serializer.clear();
     SensorCommonBlock common_block(static_cast<uint64_t>(time(nullptr)), config.latitude, config.longitude, true);
     common_block.serialize(serializer);
@@ -124,6 +125,7 @@ void Sensor::send_measurement(std::string central_ip, in_port_t port) {
 
 void Sensor::broadcast_centrals() {
     std::string delimiter(":");
+    mutex.lock();
     for (auto central : config.central_ips) {
         std::string ip(central.substr(0, central.find(delimiter)));
         std::string port(central.substr(ip.size() + 1, central.size() - ip.size()));
@@ -131,4 +133,5 @@ void Sensor::broadcast_centrals() {
         send_measurement(ip, static_cast<uint16_t >(atoi(port.c_str())));
         std::this_thread::sleep_for(std::chrono::seconds(2));
     }
+    mutex.unlock();
 }
