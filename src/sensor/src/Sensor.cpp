@@ -47,6 +47,7 @@ void Sensor::send_request_msg() {
 
     try {
         log() << "Sending: " << requestConfigBlock.toString();
+        std::unique_lock<std::mutex> lock(mutex);
         auto addr = UdpConnection::get_address(config.cc_addr, config.cc_port);
         con_send.send_msg(buffer, size, addr);
     } catch(const std::runtime_error& e) {
@@ -71,16 +72,15 @@ bool Sensor::receive_cc_config_msg() {
     for(auto& block : reader.blocks) {
         if(block->type == BlockType::cnt_sensor_config) {
             auto configBlock = reinterpret_cast<CntSensorConfigBlock*>(block.get());
-            mutex.lock();
             reload_config(configBlock->cnt_ip, configBlock->port_id, configBlock->central_ips);
-            mutex.unlock();
             log() << "Message: " << configBlock->toString();
         }
     }
     return true;
 }
 
-void Sensor::reload_config(std::string& cc_ip, in_port_t cc_port, std::vector<std::string>& central_ips) {
+void Sensor::reload_config(const std::string& cc_ip, in_port_t cc_port, const std::vector<std::string>& central_ips) {
+    std::unique_lock<std::mutex> lock(mutex);
     config.cc_addr = cc_ip;
     config.cc_port = cc_port;
 
@@ -125,13 +125,11 @@ void Sensor::send_measurement(std::string central_ip, in_port_t port) {
 
 void Sensor::broadcast_centrals() {
     std::string delimiter(":");
-    mutex.lock();
+    std::unique_lock<std::mutex> lock(mutex);
     for (auto central : config.central_ips) {
         std::string ip(central.substr(0, central.find(delimiter)));
         std::string port(central.substr(ip.size() + 1, central.size() - ip.size()));
 
         send_measurement(ip, static_cast<uint16_t >(atoi(port.c_str())));
-        std::this_thread::sleep_for(std::chrono::seconds(2));
     }
-    mutex.unlock();
 }

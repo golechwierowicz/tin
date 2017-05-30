@@ -30,7 +30,7 @@ private:
     std::mutex mutex;
 
     void init_recv_connection();
-    void reload_config(std::string& cc_ip, in_port_t cc_port, std::vector<std::string>& central_ips);
+    void reload_config(const std::string& cc_ip, in_port_t cc_port, const std::vector<std::string>& central_ips);
 
 public:
     Sensor(Serializer serializer, const std::string& filepath);
