@@ -33,7 +33,7 @@ private:
     void reload_config(std::string& cc_ip, in_port_t cc_port, std::vector<std::string>& central_ips);
 
 public:
-    Sensor(Serializer serializer);
+    Sensor(Serializer serializer, const std::string& filepath);
     ~Sensor();
 
     void send_request_msg();

@@ -9,9 +9,9 @@
 #include <thread>
 #include <blocks/SensorCommonBlock.h>
 
-Sensor::Sensor(Serializer serializer) :
+Sensor::Sensor(Serializer serializer, const std::string& filepath) :
         serializer(serializer),
-        config_reader("/home/igor/tin/src/core/resources/sensor-config.cfg") {
+        config_reader(filepath) {
 
     config.sensor_port = config_reader.read_integer(config.SENSOR_PORT_PATH);
     config.id = config_reader.read_integer(config.SENSOR_ID_PATH);
