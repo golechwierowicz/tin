@@ -11,17 +11,23 @@
 
 Sensor::Sensor(Serializer serializer) :
         serializer(serializer),
-        port(4049), // TO BE CHANGED AND READ FROM CONFIG
-        ip_address(UdpConnection::LOCALHOST),
-        config(init_config()) {
+        config_reader("/home/igor/tin/src/core/resources/sensor-config.cfg") {
+
+    config.sensor_port = config_reader.read_integer(config.SENSOR_PORT_PATH);
+    config.id = config_reader.read_integer(config.SENSOR_ID_PATH);
+    config.type = static_cast<SensorType>(config_reader.read_integer(config.SENSOR_TYPE_PATH));
+    config.longitude = config_reader.read_integer(config.SENSOR_LONGITUDE);
+    config.latitude = config_reader.read_integer(config.SENSOR_LATITUDE);
+    config.cc_port = config_reader.read_integer(config.DEFAULT_CC_PORT);
+    config.cc_addr = config_reader.read_string(config.DEFAULT_CC_IP);
+
     con_send.open_socket();
     con_recv.open_socket();
-
     init_recv_connection();
 }
 
 void Sensor::init_recv_connection() {
-    con_recv.bind_port(port);
+    con_recv.bind_port(config.sensor_port);
 }
 
 Sensor::~Sensor() {
@@ -29,23 +35,17 @@ Sensor::~Sensor() {
     con_send.close_socket();
 }
 
-SensorConfig* Sensor::init_config() {
-    // to be changed, needs to read conf from file/info sent by CC/any kind of init conf
-    // dummy method, will need to implement reading conf form file
-    return new SensorConfig(st_temp_sensor, 1, 4040, UdpConnection::LOCALHOST);
-}
-
 void Sensor::send_request_msg() {
     serializer.clear();
-    RequestConfigBlock configBlock(port, config->getId());
-    configBlock.serialize(serializer);
+    RequestConfigBlock requestConfigBlock(config.sensor_port, config.id);
+    requestConfigBlock.serialize(serializer);
 
     uint16_t size;
     uint8_t* buffer = serializer.get_buffer(size);
 
     try {
-        log() << "Sending: " << configBlock.toString();
-        auto addr = UdpConnection::get_address(config->getCc_addr(), config->getCc_port());
+        log() << "Sending: " << requestConfigBlock.toString();
+        auto addr = UdpConnection::get_address(config.cc_addr, config.cc_port);
         con_send.send_msg(buffer, size, addr);
     } catch(const std::runtime_error& e) {
         logError() << e.what();
@@ -70,6 +70,7 @@ bool Sensor::receive_cc_config_msg() {
         if(block->type == BlockType::cnt_sensor_config) {
             auto configBlock = reinterpret_cast<CntSensorConfigBlock*>(block.get());
 
+            // TODO change add ip etc centrals jak sie przeniesie do configa
             reload_config(configBlock->port_id);
 
             central_ips.clear();
@@ -83,9 +84,9 @@ bool Sensor::receive_cc_config_msg() {
     return true;
 }
 
-
+// TODO change
 void Sensor::reload_config(in_port_t port) {
-    config->setCc_port(port);
+    config.sensor_port = port;
 }
 
 void Sensor::close_connection() {
@@ -102,23 +103,21 @@ void Sensor::set_connection_timeout(long int sec, long int microsec) {
 }
 
 void Sensor::send_measurement(std::string central_ip, in_port_t port) {
-    // TODO dodac wysylanie blocku 'common'
     // TODO add locks on shared data
 
     serializer.clear();
-    // make the value being sent random
-    SensorCommonBlock commonblock(static_cast<uint64_t>(time(nullptr)), 55, 67, true);
-    commonblock.serialize(serializer);
-    SensorMeasurementBlock measurementBlock(BlockType::temp_read, 59.8);
-    measurementBlock.serialize(serializer);
+    // TODO make the value being sent random
+    SensorCommonBlock common_block(static_cast<uint64_t>(time(nullptr)), 55, 67, true);
+    common_block.serialize(serializer);
+    SensorMeasurementBlock measurement_block(BlockType::temp_read, 59.8);
+    measurement_block.serialize(serializer);
 
     uint16_t size;
     uint8_t* buffer = serializer.get_buffer(size);
 
     try {
-        log() << "Sending: " << commonblock.toString();
-        log() << "Sending: " << measurementBlock.toString();
-        // TODO change port - extract from address string
+        log() << "Sending: " << common_block.toString();
+        log() << "Sending: " << measurement_block.toString();
         auto addr = UdpConnection::get_address(central_ip, port);
         con_send.send_msg(buffer, size, addr);
     } catch(const std::runtime_error& e) {

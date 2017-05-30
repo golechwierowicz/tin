@@ -12,6 +12,7 @@
 #include <arpa/inet.h>
 #include <vector>
 #include <UdpConnection.h>
+#include <ConfigReader.h>
 #include "SensorConfig.h"
 
 class Sensor {
@@ -21,9 +22,9 @@ private:
     UdpConnection con_send;
     UdpConnection con_recv;
 
-    SensorConfig* config;
-    std::string ip_address;
-    in_port_t port;
+    SensorConfig config;
+    ConfigReader config_reader;
+    // TODO move to config
     std::vector<std::string> central_ips;
     uint8_t buf[BUF_SIZE];
 
@@ -41,7 +42,6 @@ public:
     void unset_connection_timeout();
     void send_measurement(std::string central_ip, in_port_t port);
     void broadcast_centrals();
-    void send_common_block(std::string central_ip, in_port_t port);
 
     SensorConfig* init_config();
 };
