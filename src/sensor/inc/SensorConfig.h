@@ -7,6 +7,7 @@
 
 #include <netinet/in.h>
 #include <string>
+#include <vector>
 
 enum SensorType {
     st_smoke_sensor = 2,
@@ -14,29 +15,25 @@ enum SensorType {
     st_temp_sensor = 4
 };
 
-class SensorConfig {
-private:
-    // to be read from file
+struct SensorConfig {
+    const std::string SENSOR_PORT_PATH = "sensor.port";
+    const std::string SENSOR_ID_PATH = "sensor.id";
+    const std::string SENSOR_TYPE_PATH = "sensor.type";
+    const std::string SENSOR_LONGITUDE = "sensor.longitude";
+    const std::string SENSOR_LATITUDE = "sensor.latitude";
+    const std::string DEFAULT_CC_PORT = "sensor.cc_port";
+    const std::string DEFAULT_CC_IP = "sensor.cc_ip";
+
     uint32_t id;
-    // to be read from file
+    in_port_t sensor_port;
+    uint16_t longitude;
+    uint16_t latitude;
     SensorType type;
+
     in_port_t cc_port;
-    const std::string& cc_addr;
-
-public:
-    SensorConfig(SensorType type, uint32_t id, in_port_t cc_port, const std::string& cc_addr) :
-        type(type),
-        cc_port(cc_port),
-        cc_addr(cc_addr),
-        id(id) { }
-
-    uint32_t getId() const { return id; }
-    void setId(uint32_t id) { SensorConfig::id = id; }
-    SensorType getType() const { return type; }
-    void setType(SensorType type) { SensorConfig::type = type; }
-    in_port_t getCc_port() const { return cc_port; }
-    void setCc_port(in_port_t cc_port) { SensorConfig::cc_port = cc_port; }
-    const std::string& getCc_addr() const { return cc_addr; }
+    std::string cc_addr;
+    
+    std::vector<std::string> central_ips;
 };
 
 #endif //TIN_CONFIG_H

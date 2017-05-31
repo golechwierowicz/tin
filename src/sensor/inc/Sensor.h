@@ -12,34 +12,37 @@
 #include <arpa/inet.h>
 #include <vector>
 #include <UdpConnection.h>
+#include <ConfigReader.h>
+#include <mutex>
 #include "SensorConfig.h"
 
 class Sensor {
 private:
+    static const int BUF_SIZE = 512;
     Serializer serializer;
     UdpConnection con_send;
     UdpConnection con_recv;
 
-    SensorConfig* config;
-    std::string ip_address;
-    in_port_t port = 4049;
-    std::vector<std::string> central_ips;
+    SensorConfig config;
+    ConfigReader config_reader;
+    uint8_t buf[BUF_SIZE];
+
+    std::mutex mutex;
 
     void init_recv_connection();
-    void reload_config(in_port_t);
+    void reload_config(const std::string& cc_ip, in_port_t cc_port, const std::vector<std::string>& central_ips);
 
 public:
-    Sensor(Serializer serializer);
+    Sensor(Serializer serializer, const std::string& filepath);
     ~Sensor();
 
-    // communication cc - sensor
     void send_request_msg();
-    bool receive_cc_config_msg(uint8_t *buf, size_t bufSize);
+    bool receive_cc_config_msg();
     void close_connection();
     void set_connection_timeout(long int sec, long int microsec);
     void unset_connection_timeout();
-
-    SensorConfig* init_config(); // consider using smart ptr.........
+    void send_measurement(std::string central_ip, in_port_t port);
+    void broadcast_centrals();
 };
 
 #endif // _SENSOR_H
