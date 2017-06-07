@@ -34,11 +34,10 @@ std::string ConfigReader::read_string(const std::string& path) {
 
 std::vector<std::string> ConfigReader::read_string_arr(const std::string& path, size_t size) {
     std::vector<std::string> result;
-    libconfig::Setting& setting = cf.lookup(path);
+    const libconfig::Setting& setting = cf.lookup(path);
     
     for(int i = 0; i < size; i++) {
-        std::string value = setting[i];
-        result.push_back(value);
+        result.push_back(setting[i].c_str());
     }
 
     return result;
