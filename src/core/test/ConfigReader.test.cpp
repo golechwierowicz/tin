@@ -19,12 +19,6 @@ BOOST_AUTO_TEST_CASE(init_config_reader) {
     BOOST_CHECK_NO_THROW((cf = new ConfigReader(filepath())));
 }
 
-BOOST_AUTO_TEST_CASE(throw_exc_when_init_config_reader) {
-    ConfigReader *cf;
-    BOOST_CHECK_THROW((cf = new ConfigReader("nonexistentfile.txt")), libconfig::FileIOException);
-    delete cf;
-}
-
 BOOST_AUTO_TEST_CASE(read_string) {
     ConfigReader *cf;
     std::string expected = "192.168.0.1";
