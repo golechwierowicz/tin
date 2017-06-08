@@ -107,7 +107,7 @@ void Sensor::send_measurement(std::string central_ip, in_port_t port) {
     serializer.clear();
     SensorCommonBlock common_block(static_cast<uint64_t>(time(nullptr)), config.latitude, config.longitude, true);
     common_block.serialize(serializer);
-    SensorMeasurementBlock measurement_block(BlockType(config.type), std::rand());
+    SensorMeasurementBlock measurement_block(BlockType(config.type), (std::rand() % 10000) / 10000.0);
     measurement_block.serialize(serializer);
 
     uint16_t size;
